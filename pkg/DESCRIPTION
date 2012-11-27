@@ -1,0 +1,10 @@
+Package: Rgnuplot
+Version: 1.0.0
+Title: Rgnuplot, R interface for gnuplot
+Author: Jose' Gama
+SystemRequirements: gnuplot
+Maintainer: Jose' Gama <jgama@abo.fi>
+Description: Rgnuplot, R interface for gnuplot
+License: GPL (>= 3)
+Depends: R (>= 2.7.0)
+
