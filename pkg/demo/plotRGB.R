@@ -5,11 +5,11 @@ gp.setloadpath(h1)
 #change gnuplot's working directory to be the same as R's working directory (default)
 gp.setwd(h1)
 #plot an RGB binary file
-#gp.cmd(h1, 'set terminal png;set output "plotRGB1.png"')
+#gp.cmd(h1, 'set terminal png truecolor;set output "plotRGB1.png"')
 gp.cmd(h1,'set size ratio -1; plot "blutux.rgb" binary array=128x128 flipy format="%uchar" with rgbimage notit')
 #gp.cmd(h1, 'set terminal X11;set output')
 #plot a 2D RGB binary file in a 3D box
-#gp.cmd(h1, 'set terminal png;set output "plotRGB2.png"')
+#gp.cmd(h1, 'set terminal png truecolor;set output "plotRGB2.png"')
 gp.cmd(h1,'splot "blutux.rgb" binary array=(128,128) flipy format="%uchar%uchar%uchar" with rgbimage notit')
 #gp.cmd(h1, 'set terminal X11;set output')
 #convert an RGB file to PNG

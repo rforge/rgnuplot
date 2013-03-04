@@ -11,8 +11,8 @@
 \item{...}{ extra parameters passed to the function}}
 \value{	none}
 \seealso{	\code{\link{gp.init}}}
-\author{Jose' Gama and Oscar Perpi\~{n}\'{a}n Lamigueiro}
+\author{Oscar Perpi\~{n}\'{a}n Lamigueiro}
 \examples{
-gp.plotFunction ('sin(x)', 'x', 'y', 'sine function')
+\dontrun{gp.plotFunction ('sin(x)', 'x', 'y', 'sine function')}
 }
 \keyword{programming}

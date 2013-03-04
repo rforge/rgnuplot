@@ -15,8 +15,8 @@ h1<-gp.init()
 gp.setloadpath(h1)
 #change gnuplot's working directory to be the same as R's working directory (default)
 gp.setwd(h1)
-#nordklim <- read.csv(system.file('extdata/Nordklim_data.csv', package = "Rgnuplot"), stringsAsFactors=FALSE)
-nordklim <- read.table(system.file('extdata/Nordklim_data.dat', package = "Rgnuplot"), stringsAsFactors=FALSE, header=TRUE)
+
+nordklim <- read.table(system.file('extdata/NordklimData.tab', package = "Rgnuplot"), stringsAsFactors=FALSE, header=TRUE)
 
 NKmonths <- c('January','February','March','April','May','June','July','August','September','October','November','December')
 #choose Helsinki (code 304) and country (code 'FIN') Precipitation (code 601)

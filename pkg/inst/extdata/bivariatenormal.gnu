@@ -22,5 +22,5 @@ if (flag==1) set pm3d;set palette; else unset surface; set contour base; set vie
 splot u,v, exp(-1/(2*sqrt(1-c*c))*\
                (  g(u,mx,sx)**2\
                  -2*c*g(u,mx,sx)*g(v,my,sy)\
-                 +g(v,my,sy)**2))/(2*pi*sx*sy*sqrt(1-c*c)) with line lc rgb "black" title sprintf("μx = %.3f  σx = %.3f\nμy = %.3f  σy = %.3f\nρ = %.3f",mx,sx,my,sy,sc)
+                 +g(v,my,sy)**2))/(2*pi*sx*sy*sqrt(1-c*c)) with line lc rgb "black" title sprintf("μx = %.3f  σ²x = %.3f\nμy = %.3f  σ²y = %.3f\nρ = %.3f",mx,sx,my,sy,sc)
 

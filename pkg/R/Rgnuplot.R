@@ -1,36 +1,1025 @@
 #	*	*	*			Package "Rgnuplot"		*	*	*
 
-X11.present <- NA
+pauseterm.present <- NA
 
 "%s%" <- function(x,y) paste(x,y,sep='', collapse='') # string concatenation operator
 
-gp.plotFunction <- function(x, xlab='x', ylab='y', main='', type='l',...){
+gp.plot.map<-function(mapvectfiles=NA, projection='PlateCarree', linetype='l', linestyle=1, plotTitle=NA, maprastfile=NA, maprastpalette=NA, AdditionalCode=NA,projectionInit=NA,returnCode=FALSE)
+{
+validProjections<-c('Winkeltripel','Robinson','Aitoff','NaturalEarth','WernersEquivalent','HammerWagner','EckertI','AlbersConical','SansonFlamsteed',
+'Lambert','PlateCarree','EstereoAzimutal','Ortographic','Mercator')
+AddCode<-c('','','','','set xrange [-w: w]\nset yrange [-h-600: h]\nap=7\n','','','','','','','','','')
+selProj<-which(validProjections==projection)
+if (length(selProj)==0 ) stop('Invalid projection')
+Initvalues<-c('.2','15','.2','15','0,300','12','12','-20,0','0','0','0','0,0','0,0,90,90','0')
+if (length(linetype)!=length(mapvectfiles)) linetype<-rep(linetype,length.out=length(mapvectfiles))
+if (length(linestyle)!=length(mapvectfiles)) linestyle<-rep(linestyle,length.out=length(mapvectfiles))
+if (is.na(AdditionalCode)) AdditionalCode<-''
+linestyle<-gsub('^(\\d+)$',' ls \\1',linestyle)
+#if (is.na(maprastfile) | is.na(maprastpalettes)) { maprastfiles<-'';maprastpalettes<-'' }
+if (!returnCode) s<-'load "projections.gnu"\n' else s<-''
+s<-s %s% 'p=' %s% projection %s% 'Init('
+if (is.na(projectionInit)) s<-s %s% Initvalues[selProj] %s% ')\n' else s<-s %s% projectionInit %s% ')\n'
+if (is.na(plotTitle)) s<-s  %s% 'set title p\n' else s<-s %s% 'set title "' %s% plotTitle %s% '"\n'
+#if (nchar(AdditionalCode)>0) s<-s %s% AdditionalCode %s% '"\n'
+s<-s %s% 'set size ratio -1' %s% '\n'
 
+s<-s %s% AddCode[selProj]
+if (!is.na(AdditionalCode)) s<-s %s% AdditionalCode %s% '\n'
+
+if (is.na(maprastfile)){
+s<-s  %s% 'plot '
+for (n in 1:length(mapvectfiles))
+{
+s<-s %s% '"'  %s% mapvectfiles[n] %s% '" using (' %s% projection %s% 'YC($2,$1)):(' %s% projection %s% 'XC($2,$1)) notit w ' %s% linetype[n] %s% linestyle[n]
+if (n<length(mapvectfiles)) s<-s  %s% ', \\\n'
+}
+}
+if (!is.na(maprastfile)){
+paletteRGB<- read.table(maprastpalette,  stringsAsFactors=FALSE)
+NpaletteColors<-dim(paletteRGB)[1]-1 # number of palette colors starting from zero
+s<-s  %s% 'set pm3d map
+unset key;unset tics;unset border;unset colorbox\n'
+s<-s  %s% 'set palette model RGB file "' %s% maprastpalette %s% '" u ($1/255):($2/255):($3/255)
+set cbrange[0:' %s% NpaletteColors %s% ']
+set pm3d corners2color c1
+splot "'  %s% maprastfile %s% '" using (' %s% projection %s% 'YC($2,$1)):(' %s% projection %s% 'XC($2,$1)):3 w pm3d notit '
+if (!is.na(mapvectfiles)) 
+{
+s<-s  %s% ', \\\n'
+for (n in 1:length(mapvectfiles))
+{
+s<-s  %s% '"'  %s% mapvectfiles[n] %s% '" using (' %s% projection %s% 'YC($2,$1)):(' %s% projection %s% 'XC($2,$1)):(1) notit w ' %s% linetype[n] %s% linestyle[n]
+if (n<length(mapvectfiles)) s<-s  %s% ', \\\n'
+}
+}}
+if (!returnCode) gp.run(s,TRUE) else return(s %s% '\n')
+#cat(s)
+}
+
+
+gp.matrix2PNG<-function(matM,PNGfile)
+{# saves a matrix with a mask of a map to a PNG file
+library('png')
+Mwidth<-dim(matM)[1]
+Mheight<-dim(matM)[2]
+matM<-matM[,Mheight:1]
+matRGB <- array(0,c(Mheight,Mwidth,3))
+matRGB[,,1] <- matrix(matM,Mheight,Mwidth,byrow=TRUE)
+matRGB[,,2] <- matrix(matM,Mheight,Mwidth,byrow=TRUE)
+matRGB[,,3] <- matrix(matM,Mheight,Mwidth,byrow=TRUE)
+png::writePNG(matRGB, target = PNGfile)
+}
+
+gp.map.PNG2lines<-function(PNGfile, landoutlinefile)
+{# draw "squarish" coastlines given a gridded map from a PNG image
+#based on code from Prof. Patrick J. Bartlein "The End of the Rainbow? Color Schemes for Improved Data Graphics" 
+library('png', character.only=TRUE)
+p<-png::readPNG(PNGfile)
+p<-p*255
+numrows<-dim(p)[1]
+numcols<-dim(p)[2]
+p1<-t(p[,,1])
+p2<-p1[,numrows:1]
+pxl.x<-360/numcols
+pxl.y<-180/numrows
+l<-seq(-180,180,pxl.x)
+l.e<-l[-1]
+l.w<-l[-length(l)]
+l<-seq(-90,90,pxl.y)
+l.n<-l[-1]
+l.s<-l[-length(l)]
+# loop over lats and lons and get p2 outline segments
+# latitudes
+XY <- matrix(nrow=numcols*numrows*4,ncol=2)
+n <- 0
+for (k in 1:numrows) {
+  for (j in 1:(numcols-1)) {  
+    if(p2[j,k] != p2[j+1,k]) {
+      n <- n+1
+      XY[n*2,1] <- l.e[j]; XY[n*2,2] <- l.s[k]; XY[n*2+1,1] <- l.e[j]; XY[n*2+1,2] <- l.n[k]
+    }
+  }
+}
+# longitudes
+for (j in 1:numcols) {
+  for (k in 1:(numrows-1)) {  
+    if(p2[j,k] != p2[j,k+1]) {
+      n <- n+1
+      XY[n*2,1] <- l.w[j]; XY[n*2,2] <- l.n[k]; XY[n*2+1,1] <- l.e[j]; XY[n*2+1,2] <- l.n[k]
+    }
+  }
+}
+p2.segs <- na.omit(XY)
+# save segments for reuse
+tmp<-tempfile()
+write.table(p2.segs, tmp, row.names=FALSE, sep=" ",col.name=FALSE)
+gp.run('!awk \'(FNR+1) % 2 == 0 {print ""} 1\' ' %s% tmp %s% ' > ' %s%  landoutlinefile ,FALSE)
+}
+
+gp.image.crop<-function(fileIN, fileOUT,x1,y1,x2,y2, filetype='PNG', terminal=NULL)
+{#crop an image
+#based on Qing Jie Li http://gnuplot-surprising.blogspot.fi/
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+#Initialize the gnuplot handle
+h1<-gp.init()
+#change gnuplot's working directory to be the same as R's working directory (default)
+gp.setwd(h1)
+gp.cmd(h1,'reset
+x1=' %s% x1  %s% '
+y1=' %s% y1  %s% '
+x2=' %s% x2  %s% '
+y2=' %s% y2  %s% '
+set xrange [x1:x2]
+set yrange [y1:y2]
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset tics
+unset border
+set term ' %s% terminal  %s% ' size (x2-x1),(y2-y1)
+set output "' %s% fileOUT  %s% '"
+plot "' %s% fileIN  %s% '" binary filetype=auto w rgba' )
+#close gnuplot handle
+h1<-gp.close(h1)  
+}
+
+gp.image.rotate<-function(fileIN, fileOUT,degrees, filetype='PNG', terminal=NULL)
+{#rotate an image
+#based on Qing Jie Li http://gnuplot-surprising.blogspot.fi/
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+h1<-gp.init()#Initialize the gnuplot handle
+#change gnuplot's working directory to be the same as R's working directory (default)
+gp.setwd(h1)
+gp.cmd(h1,'reset
+angle=' %s% degrees  %s% '*pi/180
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset tics
+unset border
+plot  "' %s% fileIN  %s% '"  binary filetype=auto rotate=angle w rgbima notitle
+xmax=GPVAL_DATA_X_MAX
+xmin=GPVAL_DATA_X_MIN
+ymin=GPVAL_DATA_Y_MIN
+ymax=GPVAL_DATA_Y_MAX
+set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+set term ' %s% terminal  %s% ' size (xmax-xmin),(ymax-ymin)
+set output "' %s% fileOUT  %s% '"
+plot "' %s% fileIN  %s% '" binary filetype=auto rotate=angle w rgba notitle' )
+#close gnuplot handle
+h1<-gp.close(h1)  
+}
+
+gp.image.flip<-function(fileIN, fileOUT,flipX=TRUE,flipY=FALSE, filetype='PNG', terminal=NULL)
+{#flips a png image on the X, Y or XY axis
+#based on Qing Jie Li http://gnuplot-surprising.blogspot.fi/
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+strOptions<-c('set yrange [] reverse;','set xrange [] reverse;','set xrange [] reverse;set yrange [] reverse;')
+gp.run('plot "' %s% fileIN  %s% '" binary filetype=auto w rgbimage
+xmax=GPVAL_DATA_X_MAX
+xmin=GPVAL_DATA_X_MIN
+ymin=GPVAL_DATA_Y_MIN
+ymax=GPVAL_DATA_Y_MAX
+set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset border
+unset tics
+set term ' %s% terminal  %s% ' size (xmax-xmin), (ymax-ymin)
+set output "' %s% fileOUT  %s% '"
+' %s% strOptions[flipX*1+flipY*2] %s% 'plot "' %s% fileIN  %s% '" binary filetype=auto w rgba notitle')
+}
+
+gp.image.resize<-function(fileIN, fileOUT,newWidth, newHeight, filetype='PNG', terminal=NULL)
+{#modify an image
+#based on Qing Jie Li http://gnuplot-surprising.blogspot.fi/
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+h1<-gp.init()#Initialize the gnuplot handle
+#change gnuplot's working directory to be the same as R's working directory (default)
+gp.setwd(h1)
+gp.cmd(h1,'reset
+plot "' %s% fileIN  %s% '" binary filetype=auto w rgbimage
+xmax=GPVAL_DATA_X_MAX
+xmin=GPVAL_DATA_X_MIN
+ymin=GPVAL_DATA_Y_MIN
+ymax=GPVAL_DATA_Y_MAX
+set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset border
+unset tics
+set term ' %s% terminal  %s% ' size ' %s% newWidth  %s% ',' %s% newHeight  %s% '
+set output "' %s% fileOUT  %s% '"
+plot "' %s% fileIN  %s% '" binary filetype=auto w rgba' )
+#close gnuplot handle
+h1<-gp.close(h1)  
+}
+
+gp.image.decimate<-function(fileIN, fileOUT, Xdec=2,Ydec=2, filetype='PNG', terminal=NULL)
+{#Decimation of an image
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+gp.run('plot "' %s% fileIN  %s% '" binary filetype=auto w rgbimage
+xmax=GPVAL_DATA_X_MAX
+xmin=GPVAL_DATA_X_MIN
+ymin=GPVAL_DATA_Y_MIN
+ymax=GPVAL_DATA_Y_MAX
+set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset border
+unset tics
+set term ' %s% terminal  %s% ' size (xmax-xmin), (ymax-ymin)
+set output "' %s% fileOUT  %s% '"
+plot "' %s% fileIN  %s% '" binary filetype=auto every ' %s% Xdec  %s% ':' %s% Ydec  %s% ' w rgba notitle')
+}
+
+gp.image2PNG<-function(fileIN, fileOUT, optional256=FALSE,alpha=FALSE, backgroundColor='')
+{# convert from any supported format to PNG, the file type is automatically detected
+#optional256=TRUE converts a png image to 256 indexed colors, #however the palette is not optimized as in The Gimp
+if (backgroundColor!='') backgroundColor <- '\nset object 1 rectangle from GPVAL_DATA_X_MIN,GPVAL_DATA_Y_MIN to GPVAL_DATA_X_MAX,GPVAL_DATA_Y_MAX fillcolor rgb "' %s% backgroundColor %s% '" back\n'
+s<-'plot "' %s% fileIN  %s% '" binary filetype=auto w rgbimage
+xmax=GPVAL_DATA_X_MAX
+xmin=GPVAL_DATA_X_MIN
+ymin=GPVAL_DATA_Y_MIN
+ymax=GPVAL_DATA_Y_MAX
+set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset border
+unset tics' %s% backgroundColor %s% '\nset term png '
+if (optional256==FALSE) s<-s %s% 'truecolor'%s% '  size (xmax-xmin), (ymax-ymin)
+set output "' %s% fileOUT  %s% '"
+plot "' %s% fileIN  %s% '" binary filetype=auto w '
+if (alpha==FALSE) s<-s %s% 'rgbima notitle' else s<-s %s% 'rgba notitle'
+gp.run(s)
+}
+
+gp.image2image<-function(fileIN, fileOUT , filetype='PNG', terminal=NULL,alpha=FALSE, backgroundColor='')
+{# convert from any supported format to other format, the file type is automatically detected
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+if (backgroundColor!='') backgroundColor <- '\nset object 1 rectangle from GPVAL_DATA_X_MIN,GPVAL_DATA_Y_MIN to   GPVAL_DATA_X_MAX,GPVAL_DATA_Y_MAX fillcolor rgb "' %s% backgroundColor %s% '" back\n'
+s<-'plot "' %s% fileIN  %s% '" binary filetype=auto w rgbimage
+xmax=GPVAL_DATA_X_MAX
+xmin=GPVAL_DATA_X_MIN
+ymin=GPVAL_DATA_Y_MIN
+ymax=GPVAL_DATA_Y_MAX
+set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset border
+unset tics' %s% backgroundColor %s% '\nset term ' %s% terminal  %s% ' size (xmax-xmin), (ymax-ymin)
+set output "' %s% fileOUT  %s% '"
+plot "' %s% fileIN  %s% '" binary filetype=auto w '
+if (alpha==FALSE) s<-s %s% 'rgbima notitle' else s<-s %s% 'rgba notitle'
+gp.run(s)
+}
+
+#sepia algorithm based on http://stackoverflow.com/questions/5132015/how-to-convert-image-to-sepia-in-java
+gp.image.rgbfiltercolor.sepia<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL,sepiaDepth=20,sepiaIntensity=10) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,
+'(p=(r+g+b)/3 ,r2 = p + (' %s% sepiaDepth %s% ' * 2), r2 = (r2>255)?255:r2, r2 )',
+'(p=(r+g+b)/3 ,g2 = p + ' %s% sepiaDepth %s% ', g2 = (g2>255)?255:g2, g2 )',
+'(p=(r+g+b)/3 ,b2 = p - '  %s% sepiaIntensity %s% ', b2 = (b2<0)?0:b2, b2 = (b2>255)?255:b2, b2 )')
+
+gp.image.rgbfiltercolor.sepia2<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL)
+gp.image.rgbchange(fileIN, fileOUT,'PNG',NULL,'(p=r * 0.393 + g * 0.769 + b * 0.189,(p>255)?255:p)','(p=r * 0.349 + g * 0.686 + b * 0.168,(p>255)?255:p))','(p=r * 0.272 + g * 0.534 + b * 0.131,(p>255)?255:p))')
+
+gp.image.rgbfiltercolor.red<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'r','0','0')
+gp.image.rgbfiltercolor.green<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'0','g','0')
+gp.image.rgbfiltercolor.blue<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'0','0','b')
+gp.image.rgbfalsecolor<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'g','b','r')
+gp.image.rgbgreyscaleY<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'0.299*r + 0.587*g + 0.114*b') # YIQ/NTSC - RGB colors in a gamma 2.2 color space
+gp.image.rgbgreyscaleLinear<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'0.3086*r + 0.6094*g + 0.0820*b') # linear RGB colors
+gp.image.rgbgreyscaleRMY<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'0.5*r + 0.419*g + 0.081*b') # RMY
+gp.image.rgbgreyscaleBT709<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'0.2125*r + 0.7154*g + 0.0721*b') # BT709
+gp.image.rgbgreyscaleavg<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'(r + g + b)/3')
+gp.image.rgbgreyscaleLuminosity<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'((R>G)?((R>B)?R:B):((G>B)?G:B) + (R<G)?((R<B)?R:B):((G<B)?G:B)) / 2')
+#gp.image.rgbBW<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL) gp.image.rgbchange(fileIN, fileOUT, filetype, terminal,'(r==250 & g==250 & b==250)?255:0') # 2 colors BW
+
+
+
+gp.image.rgbchange<-function(fileIN, fileOUT, filetype='PNG', terminal=NULL,rgbformula,rgbformulaG='',rgbformulaB='')
+{#modify an image with either a formula for each color component of RGB or for all
+#based on Qing Jie Li http://gnuplot-surprising.blogspot.fi/
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+rflag <- ((rgbformulaG=='') & (rgbformulaB=='')) # rflag TRUE means that there is one formula for all RGB color components
+
+h1<-gp.init()#Initialize the gnuplot handle
+#set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
+gp.setloadpath(h1)
+#change gnuplot's working directory to be the same as R's working directory (default)
+gp.setwd(h1)
+gcmd <- 'reset
+plot "' %s% fileIN  %s% '" binary filetype=auto w rgbimage
+xmax=GPVAL_DATA_X_MAX
+xmin=GPVAL_DATA_X_MIN
+ymin=GPVAL_DATA_Y_MIN
+ymax=GPVAL_DATA_Y_MAX
+set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+rgbchange(r,g,b)=' %s% rgbformula  %s% '
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset border
+unset tics
+set term ' %s% terminal  %s% ' size (xmax-xmin),(ymax-ymin)
+set output "' %s% fileOUT  %s% '"\n'
+if (rflag) gcmd <- gcmd %s% 'plot "' %s% fileIN  %s% '" u(rgbchange(column(1),column(2),column(3))):(rgbchange(column(1),column(2),column(3))):(rgbchange(column(1),column(2),column(3))) binary filetype=auto w rgba' 
+else gcmd <- gcmd %s% 'rgbchange2(r,g,b)=' %s% rgbformulaG  %s% '
+rgbchange3(r,g,b)=' %s% rgbformulaB  %s% '
+plot "' %s% fileIN  %s% '" u(rgbchange(column(1),column(2),column(3))):(rgbchange2(column(1),column(2),column(3))):(rgbchange3(column(1),column(2),column(3))) binary filetype=auto w rgba' 
+#cat(gcmd)
+gp.cmd(h1,gcmd)
+#close gnuplot handle
+h1<-gp.close(h1)  
+}
+
+gp.RGBsample<-function(xRGB='#FFFFFF', optionalTitle='')
+{#plot a square filled with an RGB color
+#Initialize the gnuplot handle
+if (optionalTitle!='') optionalTitle<-'\nset title "' %s% optionalTitle %s% '"\n'
+h1<-gp.init()
+#change gnuplot's working directory to be the same as R's working directory (default)
+gp.setwd(h1)
+gp.cmd(h1,'reset
+set object  1 rect from screen 0, 0 to screen 1, 1 behind fc rgb "' %s% xRGB %s% '"  fillstyle  solid 1.00 noborder
+unset xtics 
+unset ytics 
+unset key
+unset border' %s% optionalTitle %s% '
+plot 0 lc rgb "' %s% xRGB %s% '" notit')
+gp.pause()
+#close gnuplot handle
+h1<-gp.close(h1)  
+}
+
+gp.resampleDEM<-function(fileIN, fileOUT, xrange=NA, yrange=NA, interpolationMethod='50,50 gauss 1',XYformat=FALSE)#(xmax-xmin+1),(ymax-ymin+1) qnorm 10
+{#resamples DEM data, similarly to what GIS applications do
+# interpolationMethod = { splines | qnorm {<norm>} | (gauss | cauchy | exp | box | hann) {<dx>} {,dy} }
+h1<-gp.init()#Initialize the gnuplot handle
+#change gnuplot's working directory to be the same as R's working directory (default)
+gp.setwd(h1)
+if (XYformat) u<-'u 1:2:3' else u<-'matrix'
+gcmd <- 'reset
+'
+if (is.na(xrange) | is.na(yrange)) gcmd <- gcmd %s% 'splot "' %s% fileIN  %s% '" matrix w l
+xmax=GPVAL_DATA_X_MAX
+xmin=GPVAL_DATA_X_MIN
+ymin=GPVAL_DATA_Y_MIN
+ymax=GPVAL_DATA_Y_MAX' else gcmd <- gcmd %s% 'xmin=' %s% xrange[1]  %s% '
+xmax=' %s% xrange[2]  %s% '
+ymin=' %s% yrange[1]  %s% '
+ymax=' %s% yrange[2]  %s% ''
+gcmd <- gcmd %s% '
+set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+set dgrid3d ' %s% interpolationMethod  %s% '
+set table "' %s% fileOUT  %s% '"
+splot "' %s% fileIN  %s% '" ' %s% u %s%'  w l
+unset table'
+gp.cmd(h1, gcmd)
+#cat(gcmd)
+#close gnuplot handle
+h1<-gp.close(h1)  
+}
+
+gp.hexRGB<-function(r,g=NA,b=NA)
+{#returns an RGB sequence, from decimal to hexadecimal, ready for gnuplot
+if (is.na(g) & is.na(b) & length(r)==3) sprintf("#%02X%02X%02X", as.integer(r[1]),as.integer(r[2]),as.integer(r[3]))
+else sprintf("#%02X%02X%02X", as.integer(r),as.integer(g),as.integer(b))
+}
+
+gp.image.plot<-function(fileIN,alpha=FALSE, backgroundColor='', filetype='', terminal=NULL)
+{#display an image file on the screen or to a chosen terminal except to a file
+if (is.null(terminal))
+{
+terminal<-''
+if (filetype!='') terminal<-'\nset term ' %s% gp.ext2terminal(filetype) %s% '\n'
+} 
+rgbtype<-c('rgbima','rgbalpha')
+if (backgroundColor!='') backgroundColor <- '\nset object 1 rectangle from GPVAL_DATA_X_MIN,GPVAL_DATA_Y_MIN to   GPVAL_DATA_X_MAX,GPVAL_DATA_Y_MAX fillcolor rgb "' %s% backgroundColor %s% '" back\nreplot'
+h1<-gp.init()#Initialize the gnuplot handle
+#change gnuplot's working directory to be the same as R's working directory (default)
+gp.setwd(h1)
+gp.cmd(h1,terminal %s% '
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset tics
+unset border
+plot "' %s% fileIN  %s% '" binary filetype=auto w ' %s% rgbtype[alpha+1]  %s% ' notitle' %s% backgroundColor)
+gp.pause()
+#close gnuplot handle
+h1<-gp.close(h1)  
+}
+
+gp.run <- function(cmd, optPause=FALSE){
+ # execute a gnuplot string directly
+if (!is.character(cmd)) stop('Argument <<cmd>> should be a string')
+  h1<-gp.init()
+  gp.setloadpath(h1)
+  gp.setwd(h1)
+  gp.cmd(h1, cmd)
+if (optPause) gp.pause()
+  h1<-gp.close(h1)
+}
+
+gp.RGB2image<-function(RGBfile, imagefile,width,height,filetype='PNG',gpterminal=NULL)
+{#converts an RGB file to another image file
+if (!is.character(RGBfile)) stop('Argument <<RGBfile>> should be a string')
+if (!is.character(imagefile)) stop('Argument <<imagefile>> should be a string')
+if (!is.numeric(width)) stop('Argument <<width>> should be integer')
+if (!is.numeric(height)) stop('Argument <<height>> should be integer')
+if (!file.exists(RGBfile)) stop('Error! File ' %s% RGBfile %s% ' does not exist' )
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+gp.run('set terminal ' %s% gpterminal %s% ' size ' %s% width %s% ',' %s% height %s% ';set output "' %s% imagefile %s% '"
+set size ratio -1
+set lmargin 0
+set rmargin 0
+set tmargin 0
+set bmargin 0
+unset key
+unset tics
+unset border
+plot "' %s% RGBfile %s% '" binary array=' %s% width %s% 'x' %s% height %s% ' flipy format="%uchar" with rgbimage')
+}
+
+gp.RGB2DAT<-function(RGBfile, DATfile,width,height)
+{#converts an RGB file to a matrix data file
+if (!is.character(RGBfile)) stop('Argument <<RGBfile>> should be a string')
+if (!is.character(DATfile)) stop('Argument <<DATfile>> should be a string')
+if (!is.numeric(width)) stop('Argument <<width>> should be integer')
+if (!is.numeric(height)) stop('Argument <<height>> should be integer')
+if (!file.exists(RGBfile)) stop('Error! File ' %s% RGBfile %s% ' does not exist' )
+RGBsize <- file.info(RGBfile)$size
+to.read = file(RGBfile, "rb")
+RGBbin <- readBin(to.read, raw(), n = RGBsize, size = 1)
+close(to.read)
+matRGB <- matrix(RGBbin,width,height,byrow=TRUE)
+gp.matrixr2gnu(matRGB, DATfile)
+}
+
+gp.xydata2matrix <- function(fileIN,fileOUT){
+# convert a file with splot data to a gnuplot matrix file
+
+#tmpcntlines<-read.table(fileIN, header = F,sep='*',stringsAsFactors=FALSE,colClasses='character',comment.char = "+",blank.lines.skip=FALSE)
+#tmpcntlines<-unlist(c(tmpcntlines))
+#str(tmpcntlines)
+#tcomments<-which(substr(tmpcntlines,1,1)=='#')
+#tmpcntlines<-tmpcntlines[-tcomments]
+#sum(tmpcntlines=='')
+
+t1<-read.table(fileIN, header = F,strip.white=TRUE,blank.lines.skip=TRUE)#,sep=' '
+#t1<-t1[,-c(1,3,5,7)]
+t1<-t1[,1:3]
+m<-length(unique(t1[,1]))
+n<-length(t1[,1])/m
+t2<-matrix(t1[  ,3],m,n,byrow=TRUE)
+t2<-apply(t2,2,rev)  #flip the matrix
+if (file.exists(fileOUT)) file.remove(fileOUT)
+gp.matrixr2gnu((t2),fileOUT)
+}
+
+gp.matrixfile.pad<-function(fileIN,fileOUT,overwrite=TRUE)
+{#add 1 row and 1 column (by duplicating the last row and last column) to a matrix file to display it 
+#fileIN="3colors.dat";fileOUT="3colorsb.dat";overwrite=TRUE
+if (!file.exists(fileIN)) stop('Error! File ' %s% fileIN %s% ' does not exist' )
+if (overwrite==FALSE & file.exists(fileOUT)) stop('Error! File' %s% fileOUT %s% ' already exists' )
+if (overwrite==TRUE & file.exists(fileOUT)) file.remove(fileOUT)
+z<-read.delim(fileIN,sep=' ',header=FALSE)
+numrows<-nrow(z)
+numcols<-ncol(z)
+z<-matrix(unlist(z),nrow=numrows)
+z<-cbind(z,z[,numcols])
+z2<-matrix(c(c(t(z)), z[numrows,]),numrows+1,numcols+1,byrow=TRUE)
+write.table(z2, file=fileOUT, quote = FALSE, row.names = FALSE, col.names = FALSE)
+}
+
+gp.show.palette.colornames<-function()
+{#get gnuplot's RGB color names as a dataframe - 'ColorName','ColorHex','R','G','B'
+logfile <- tempfile()
+handle<-gp.init.save.stderr(logfile)
+gp.cmd(handle, 'set print "' %s% logfile %s% '";show palette colornames;set print')
+Sys.sleep(1) #wait 1 second
+#s<-gp.file2string(logfile)
+handle<-gp.close(handle)
+s<-read.table(logfile,header=FALSE ,skip=1,strip.white=TRUE,comment.char='',stringsAsFactors=FALSE)
+s<-s[,-3]
+colnames(s)<-c('ColorName','ColorHex','R','G','B')
+s
+}
+
+gp.show.datafile.binary.filetypes<-function()
+{#get gnuplot's RGB binary types as a vector
+logfile <- tempfile()
+handle<-gp.init.save.stderr(logfile)
+gp.cmd(handle, 'set print "' %s% logfile %s% '";show datafile binary filetypes;set print')
+Sys.sleep(1) #wait 1 second
+handle<-gp.close(handle)
+s<-read.table(logfile,header=FALSE ,skip=2,strip.white=TRUE,comment.char='',stringsAsFactors=FALSE)
+s<-c(unlist(s))
+attr(s,'names')<-NULL
+s
+}
+
+gp.matrix2palette<-function(paletteData, paletteFileName,paletteIndeces=0,SolidColor=FALSE)
+{#save a palette from matrix data with optional palette indeces and the option to modify the palette for solid colors
+paletteSize<-length(paletteData)
+paletteRows<-paletteSize/3
+if (length(paletteIndeces)!=1) if (length(paletteIndeces)!=paletteRows) stop('Error! The number of indeces must be the same as the number of palette colors')
+m<-matrix(paletteData,paletteRows,3,byrow=TRUE)
+if (SolidColor==FALSE)
+{
+if (length(paletteIndeces)==1) 
+{
+gp.matrixr2gnu(m,paletteFileName) # save palette data
+} else {
+m<-cbind(m, paletteIndeces)# add indices to the palette data
+gp.matrixr2gnu(m,paletteFileName)# save palette data
+}
+} else {# SolidColor==TRUE
+m2<-matrix(0,paletteRows*2,ncol=3)
+for (n in 1:paletteRows*2) { m2[n-1,]<-m[n/2,];m2[n,]<-m[n/2,] }
+#m2<-rbind(m, m)
+#m2<-matrix(c(m2),paletteRows*2,ncol=3,byrow=TRUE)
+if (length(paletteIndeces)==1) 
+{
+paletteIndeces2<-c(-1,rep(0:(paletteRows-1),each=2,length=(paletteRows*2-1)))
+m3<-cbind(m2, paletteIndeces2)# add indices to the palette data
+gp.matrixr2gnu(m3,paletteFileName)# save palette data
+} else {
+paletteIndeces2<- c(paletteIndeces[1]-1,rep(paletteIndeces,each=2,length=(paletteRows*2-1)))
+m3<-cbind(m2, paletteIndeces2)# add indices to the palette data
+gp.matrixr2gnu(m3,paletteFileName)# save palette data
+}
+}
+}
+
+gp.RGB1to3channels<-function(RGB1channel=NULL, fileRGB1channel=NULL, fileRGB3channel=NULL)
+{#converts a vector or matrix of RGB 1-channel decimal values (24 bit) to 3-channel decimal values (3x8 bit)
+#the input can be either a vector or matrix (RGB1channel) or a file (fileRGB1channel) 
+#the output can be either a vector (returned value) or a file (fileRGB3channel)
+outFile<-(is.null(fileRGB3channel))
+if (outFile) fileRGB3channel<-tempfile()#output vector
+if (is.null(fileRGB1channel))#input vector or matrix (RGB1channel)
+{
+if (is.matrix(RGB1channel)) RGB1channel<-c(matrix(RGB1channel,dim(RGB1channel)[1],dim(RGB1channel)[2],byrow=FALSE))
+gp.run('set table "' %s% fileRGB3channel %s% '"
+splot "-" u (int($1/65536)):((int($1) & 65280)/256):(int($1) & 255)
+' %s% paste(RGB1channel,'\n',sep='',collapse='') %s% '
+e
+unset table')
+r<-read.table(fileRGB3channel,skip=6,stringsAsFactors=FALSE, col.names=c('R','G','B','Z'))
+r<-r[,-4]
+if (outFile) return(r) #output vector
+if (!outFile) write.table(r,file=fileRGB3channel, col.names=FALSE,row.names=FALSE)#output file
+} else {#input file (fileRGB1channel)
+if (is.matrix(RGB1channel)) RGB1channel<-c(matrix(RGB1channel,dim(RGB1channel)[1],dim(RGB1channel)[2],byrow=FALSE))
+gp.run('set table "' %s% fileRGB3channel %s% '"
+splot "' %s% fileRGB1channel %s% '" u (int($1/65536)):((int($1) & 65280)/256):(int($1) & 255)
+unset table')
+r<-read.table(fileRGB3channel,skip=6,stringsAsFactors=FALSE, col.names=c('R','G','B','Z'))
+r<-r[,-4]
+if (outFile) return(r) #output vector
+if (!outFile) write.table(r,file=fileRGB3channel, col.names=FALSE,row.names=FALSE)#output file
+}
+}
+
+gp.CreateIndexFromMatrixAndPalette<-function(matrixRGB, paletteRGB)
+{#from a matrix with RGB colors (decimal 24bit) from an image file and its palette as a vector, create a matrix with indices
+indexedVector<-matrix(0,dim(matrixRGB)[1],dim(matrixRGB)[2])
+for (m in 1:dim(matrixRGB)[1])
+for (n in 1:dim(matrixRGB)[2])
+indexedVector[m,n]<-which(matrixRGB[m,n]==paletteRGB)-1
+indexedVector
+}
+
+gp.CreatePaletteFromMatrix<-function(matrixRGB, sortType='')
+{#from a matrix with RGB colors (decimal 24bit) from an image file create a palette of 256 colors (decimal 24bit), as a vector
+paletteRGB<-unique(c(matrixRGB))#get all the different colors
+if (length(paletteRGB)>256) warning('The palette has ' %s% length(paletteRGB) %s% ' colors') #else {
+#paletteRGB<-c(paletteRGB,rep(0,256-length(paletteRGB)))
+#}
+if (sortType=='') return(paletteRGB)
+if (sortType=='desc')
+{
+#sort by descending number of occurrences, then by position on the image
+uVectorSum<-sapply(paletteRGB, function(x) sum(x==matrixRGB))
+uVectorPos<-sapply(paletteRGB, function(x) min(which(x==matrixRGB)))
+uVector2<-cbind(paletteRGB, uVectorSum,uVectorPos)
+uVector3<-uVector2[order(uVector2[,2], decreasing=TRUE),]
+return(uVector3[,1])
+}
+if (sortType=='GIMP')
+{
+stmp<-sprintf('%x',paletteRGB)
+uVectorSum<- as.numeric(paste('0x',sep='', substr(stmp,1,2))) + as.numeric(paste('0x',sep='', substr(stmp,3,4))) + as.numeric(paste('0x',sep='', substr(stmp,5,6))) 
+uVector2<-cbind(paletteRGB, uVectorSum)
+uVector3<-uVector2[order(uVector2[,2], decreasing=FALSE),]
+return(uVector3[,1])
+}
+}
+
+gp.palette.plot<-function(filepal, sortType='', TheGimp=FALSE)
+{#plots a palette from an indexed PNG file
+PNGdata2<-gp.PNG2color(filepal)#get the color matrix from an indexed PNG file
+paletteRGB<-gp.CreatePaletteFromMatrix(PNGdata2, sortType)#create a palette
+gp.RGB1to3channels(paletteRGB,fileRGB3channel='blutuxwithpalette.pal')
+tmppal<-tempfile()
+gp.RGB1to3channels(paletteRGB,fileRGB3channel=tmppal)#save the palette to a file with separated RGB components
+if (!TheGimp) r<-read.table(tmppal, stringsAsFactors=FALSE) else {
+r<-read.table(tmppal, skip=6, stringsAsFactors=FALSE)
+r<-r[,-4]# get rid of "index"
+}
+r<-as.matrix(r)
+tmppalsolid<-tempfile()
+gp.matrix2palette(c(t(r)), tmppalsolid,0,TRUE)#save the indexed color matrix to a file
+gp.run('set view map
+set size square
+set yrange [] reverse
+set cbrange [0:255]
+set samples 16
+set isosamples 16
+set palette model RGB file "' %s% tmppalsolid %s% '" u ($1/255):($2/255):($3/255)
+set pm3d corners2color c1
+splot [1:16][1:16] "++" u 1:2:($1+(16*($2-1))) w pm notit',TRUE)
+}
+
+gp.GimpPalette2matrix<-function(paletteGimp,returnIndex=FALSE)
+{#reads a Gimp palette into a matrix, optionally the index can be returned too
+r<-read.table(paletteGimp,skip=4,stringsAsFactors=FALSE, col.names=c('R','G','B','Z','index'))
+r<-r[,-4]# get rid of "index"
+if (!returnIndex) r<-r[,-4] # get rid of the index value
+as.matrix(r)#data.frame to matrix
+}
+
+gp.matrix2GimpPalette<-function(paletteMatrix, gplFileName, GimpColumns=16)
+{#saves a matrix into a Gimp palette file (gpl)
+Nrows <- dim(paletteMatrix)[1]
+Ncols <- dim(paletteMatrix)[2]
+if (Ncols==3) paletteMatrix <- cbind(paletteMatrix,0:(Nrows-1))
+s <- 'GIMP Palette
+Name: ' %s% gplFileName %s% '
+Columns: ' %s% GimpColumns %s% '
+#
+'
+paletteMatrix<-apply(paletteMatrix,1:2,as.character)
+paletteMatrix<-apply(paletteMatrix,1:2,function(x) paste(substr('   ',1,3-nchar(x, type = "chars")),x,sep='',collapse=''))
+paletteMatrix[,4]<-sub(' *([0-9]+)','	Index \\1\n',paletteMatrix[,4],perl=TRUE)
+cat(file=gplFileName %s% '.gpl',s %s% paste(t(paletteMatrix),sep='',collapse=''))
+}
+
+gp.mapsr2gnu <- function(mapsObj,mapFileName)
+{#saves the lines and points from a maps object to a data file readable by gnuplot
+tmpMatrix<-cbind(mapsObj$x,mapsObj$y)
+gp.matrixr2gnu(tmpMatrix,mapFileName)
+s<-gp.file2string(mapFileName)
+s<-gsub('NA NA', '', s, ignore.case = FALSE, perl=TRUE)
+cat(s,file=mapFileName)
+}
+
+gp.boxXY<-function(fileName)
+{#returns the box around a location
+m<-read.table(fileName, colClasses='numeric', stringsAsFactors=FALSE)
+matrix(unlist(m),ncol=2,byrow=FALSE)
+maxValues<-apply(m,2,max)
+minValues<-apply(m,2,min)
+r<-rbind(minValues, maxValues)
+colnames(r)<-c('X','Y')
+r
+}
+
+gp.SHP2gnu<-function(SHPfilename, SHPlayername,gnufilename,toCRS='+init=epsg:4326')
+{#given a shapefile (SHP) with full path and the shapefile layer name, the coordinates are saved to a text file readable by gnuplot
+library('rgdal', character.only=TRUE)
+vecpxl = rgdal::readOGR(SHPfilename, SHPlayername)#load shapefile
+fromCRS<-vecpxl@proj4string@projargs
+isLines<-(is(vecpxl)[1]=='SpatialLinesDataFrame')
+if (isLines) z<-vecpxl@lines else z<-vecpxl@polygons # get the lines or polygons
+if (file.exists(gnufilename)) file.remove(gnufilename)
+for (n in 1:length(z))
+{
+if (isLines) z1<-z[[n]]@Lines else z1<-z[[n]]@Polygons
+for (m in 1:length(z1))
+{
+if (isLines) z2<-z[[n]]@Lines[[m]]@coords else z2<-z[[n]]@Polygons[[m]]@coords
+if (toCRS==fromCRS) write(t(z2),gnufilename,ncolumns = 2,append=TRUE) else {
+b_sp <- sp::SpatialPoints(z2, proj4string=sp::CRS(fromCRS))
+z3<-rgdal::spTransform(b_sp, sp::CRS(toCRS))
+write(t(z3@coords),gnufilename,ncolumns = 2,append=TRUE)
+}
+cat(file=gnufilename,'\n',append=TRUE)
+}
+}
+}
+
+gp.ext2terminal<-function(filetype='PNG')
+{# determines a suitable terminal from a file extension
+if (filetype=='JPEG') terminal<-'jpeg'
+if (filetype=='PNG') terminal<-'pngcairo'
+if (filetype=='SVG') terminal<-'svg'
+if (filetype=='EPS') terminal<-'postscript eps enhanced color'
+if (filetype=='PS') terminal<-'postscript'
+terminal
+}
+
+gp.image.tile<-function(fileOUT, matrixFilenamesIn, vectorWidths, vectorHeights, matrixXscale=NULL, matrixYscale=NULL,alpha=FALSE, filetype='PNG', terminal=NULL)
+{#tiles multiple image files together into one
+totalX<-sum(vectorWidths)
+totalY<-sum(vectorHeights)
+if (alpha) alphu <- ' u 1:2:3:4 w rgba' else alphu <- ' u 1:2:3 w rgbima'
+if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+s<-'set term ' %s% terminal %s% ' size ' %s% totalX %s% ',' %s% totalY %s% '
+set output "' %s% fileOUT %s% '"
+set xrange [0:' %s% (totalX-1) %s% '] noreverse nowriteback
+set yrange [0:' %s% (totalY-1) %s% '] noreverse nowriteback
+unset key;unset xtics; unset ytics; unset x2tics; unset y2tics;set format ""
+unset border;unset title;unset label;unset legend
+set lmargin 0
+set rmargin 0
+set bmargin 0
+set tmargin 0
+plot '
+if (is.null(matrixXscale)) matrixXscale<-matrix(1,dim(matrixFilenamesIn)[1],dim(matrixFilenamesIn)[2],byrow=TRUE)
+if (is.null(matrixYscale)) matrixYscale<-matrix(1,dim(matrixFilenamesIn)[1],dim(matrixFilenamesIn)[2],byrow=TRUE)
+for (x in 1:dim(matrixFilenamesIn)[1])
+for (y in 1:dim(matrixFilenamesIn)[2])
+{
+originX<-(totalX-sum(vectorWidths[1:x]))-1
+if (originX<0) originX<-0
+originY<-(totalY-sum(vectorHeights[2:y]))
+#print(originY)
+if (is.na(originY)) originY<-1
+if (originY==0) originY<-1
+s1<-'"' %s% matrixFilenamesIn[x,y] %s% '" binary filetype=auto origin=(' %s% originX %s% ',' %s% originY %s% ') dx=' %s% (matrixXscale[x,y]) %s% ' dy=' %s% (matrixYscale[x,y]) %s% alphu
+if ((x != dim(matrixFilenamesIn)[1]) | (y != dim(matrixFilenamesIn)[2]))  s1<-s1 %s% ', '
+s<-s %s% s1 
+}
+gp.run(s,FALSE)
+#cat(s)
+}
+
+gp.XYcoords2shpere<-function(xyfile,newxyfile)
+{#read a XY data file and change the coords to fit a sphere
+z<-read.table(xyfile, header = F,sep=' ',strip.white=TRUE,blank.lines.skip=TRUE)
+z<-z[,c(1,3,5)]
+Mwidth=length(unique(z[,2]))
+Mheight=length(unique(z[,1]))
+z[1]<-(-((z[1]-1)-Mheight/2)/Mheight*180)
+z[2]<-(-((z[2]-1)-Mwidth/2)/Mwidth*360)
+z2 <-data.matrix(z)
+uniqz2<-unique(z2[,1])
+if (file.exists(newxyfile)) file.remove(newxyfile)
+for (uz in uniqz2) {write(t(z2[which(z2[,1]==uz),]),newxyfile,ncolumns = 3,append=TRUE);cat('\n',file=newxyfile,append=TRUE)}
+}
+
+gp.saveXYfile<-function(Rmatrix,xyfile)
+{#saves an R matrix with coords as a XY data file
+Mwidth=length(unique(Rmatrix[,2]))
+Mheight=length(unique(Rmatrix[,1]))
+z2 <-data.matrix(Rmatrix)
+uniqz2<-unique(z2[,1])
+if (file.exists(xyfile)) file.remove(xyfile)
+for (uz in uniqz2) {write(t(z2[which(z2[,1]==uz),]),xyfile,ncolumns = 3,append=TRUE);cat('\n',file=xyfile,append=TRUE)}
+}
+
+gp.colorhistogram<-function(fileIN, Ncols=1, vectCols=NULL, gtitle='',gxlabel='',gylabel='')
+{#plots a color histogram
+#based on http://gnuplot.sourceforge.net/demo_cvs/histograms.html
+#example: file.copy('/usr/share/doc/gnuplot-doc/examples/immigration.dat',getwd() %s% '/immigration.dat')
+#gp.colorhistogram('immigration.dat', 4, c(6,12:14),'Immigration from Northern Europe\n(columstacked histogram)','Immigration by decade','Country of Origin')
+if (is.null(vectCols)) vectCols<-1:Ncols
+s<-'set border 3 front linetype -1 linewidth 1.000
+set boxwidth 0.75 absolute
+set style fill   solid 1.00 border lt -1
+set grid nopolar
+set grid noxtics nomxtics ytics nomytics noztics nomztics nox2tics nomx2tics noy2tics nomy2tics nocbtics nomcbtics
+set grid layerdefault   linetype 0 linewidth 1.000,  linetype 0 linewidth 1.000
+set key outside right top vertical Left reverse noenhanced autotitles columnhead box linetype -1 linewidth 1.000
+set style histogram columnstacked title  offset character 0, 0, 0
+set datafile missing "-"
+set style data histograms
+set xtics border in scale 1,0.5 nomirror norotate  offset character 0, 0, 0 autojustify
+set xtics norangelimit
+set xtics ()
+set ytics border in scale 0,0 mirror norotate  offset character 0, 0, 0 autojustify
+set ztics border in scale 0,0 nomirror norotate  offset character 0, 0, 0 autojustify
+set cbtics border in scale 0,0 mirror norotate  offset character 0, 0, 0 autojustify
+set rtics axis in scale 0,0 nomirror norotate  offset character 0, 0, 0 autojustify
+set title "' %s% gtitle %s% '" 
+set xlabel "' %s% gxlabel %s% '" 
+set ylabel "' %s% gylabel %s% '" 
+set yrange [ 0.00000 : * ] noreverse nowriteback
+i = 23
+plot "' %s% fileIN %s% '" using ' %s% vectCols[1] %s% ' ti col'
+for (n in 2:Ncols) s<-s %s% ', "" using ' %s% vectCols[n] %s% ' ti col'
+gp.run(s,TRUE)
+}
+
+gp.math3d.plot<-function(foo='(1+sgn(x-0.5))*(sin(4*pi*x) + sin(4*pi*y)+2)/2', xrange=c(0,1), yrange=c(0,1))
+{# 3d plots like Mathematica
+# from: Ben Ruijl Ben's blog http://negativeprobability.blogspot.fi/2012/07/making-gnuplot-plots-look-like.html
+s<-'set palette defined ( 0 "#bd2c29", 2 "#ffd35a", 6 "white")
+set pm3d implicit at s hidden3d 100
+set style line 100 lc rgb "#000000" lt 1 lw 0.6
+unset hidden3d
+unset surface
+set border 4095 front linetype -1 linewidth 0.8
+set ticslevel 0
+set xrange [' %s% as.character(xrange[1]) %s% ':' %s% as.character(xrange[2]) %s% ']
+set yrange [' %s% as.character(yrange[1]) %s% ':' %s% as.character(yrange[2]) %s% ']
+set ztics 1
+set isosamples 40,40
+set samples 20,20
+unset colorbox
+set view 32,28
+splot ' %s% foo %s%  ' notit'
+gp.run(s,TRUE)
+}
+
+gp.map.merpar<-function(parfile='worldpar.dat',merfile='worldmer.dat',pardeg=10,merdeg=10,splot=FALSE)
+{# create a data file with meridians or parallels
+if (splot) seprtr <- '\n\n' else seprtr <- '\n'
+if (is.character(parfile))
+{
+if (file.exists(parfile)) file.remove(parfile)
+for (m in seq(-90,90,pardeg))
+{
+for (n in seq(-180,180,merdeg))
+cat(file=parfile,n,' ',m,seprtr,append=TRUE)
+cat(file=parfile,'\n',append=TRUE)
+}
+}
+if (is.character(merfile))
+{
+if (file.exists(merfile)) file.remove(merfile)
+for (m in seq(-180,180,merdeg))
+{
+for (n in seq(-90,90,pardeg))
+cat(file=merfile,m,' ',n,seprtr,append=TRUE)
+cat(file=merfile,'\n',append=TRUE)
+}
+}
+}
+
+gp.diverging.colormap<-function(s,rgb1,rgb2, outColorspace='sRGB')
+{# This function is based on Kenneth Moreland's code for creating Diverging Colormaps.
+# Matlab code created by Andy Stein. Translated to R by Jose Gama.
+# s is a vector that goes between zero and one
+# rgb1,rgb2 are objects from the colorspace package
+# RGB, sRGB, HLS, HSV, LAB, LUV, PolarLAB, PolarLUV, XYZ
+# outColorspace is the color space for the output
+library('colorspace', character.only=TRUE)
+LabToMsh<-function(Lab)
+{
+L<-Lab@coords[1]
+a<-Lab@coords[2]
+b<-Lab@coords[3]
+M <- sqrt(L*L + a*a + b*b)
+s <- (M > 0.001) * acos(L/M)
+h <- (s > 0.001) * atan2(b,a)
+c(M,s,h)
+}
+MshToLab<-function(Msh)
+{
+M<-Msh[1]
+s<-Msh[2]
+h<-Msh[3]
+L <- M*cos(s)
+a <- M*sin(s)*cos(h)
+b <- M*sin(s)*sin(h)
+colorspace::LAB(L,a,b)
+}
+
+AngleDiff<-function(a1, a2)
+{# Given two angular orientations, returns the smallest angle between the two.
+v1<-matrix(c(cos(a1), sin(a1)),1,2,byrow=TRUE)
+v2<-matrix(c(cos(a2), sin(a2)),1,2,byrow=TRUE)
+x<-acos(sum(v1 * v2))
+x
+}
+AdjustHue<-function(msh, unsatM)
+{# For the case when interpolating from a saturated color to an unsaturated
+# color, find a hue for the unsaturated color that makes sense.
+        if (msh[1] >= unsatM-0.1  )                  
+            # The best we can do is hold hue constant.
+            h <- msh[3]
+        else {
+            # This equation is designed to make the perceptual change of the interpolation to be close to constant.
+            hueSpin <- (msh[2]*sqrt(unsatM^2 - msh[1]^2)/(msh[1]*sin(msh[2])))
+            # Spin hue away from 0 except in purple hues.
+            if (msh[3] > -0.3*pi) h <- msh[3] + hueSpin else h <- msh[3] - hueSpin
+            }
+            h
+}
+diverging.map.1val<-function(s, rgb1, rgb2, outColorspace='sRGB')
+{
+# Interpolate a diverging color map
+# s is a number between 0 and 1
+msh1 <- LabToMsh(as(rgb1, "LAB"))
+msh2 <- LabToMsh(as(rgb2, "LAB"))
+# If the endpoints are distinct saturated colors, then place white in between them
+if (msh1[2] > 0.05 & msh2[2] > 0.05 & AngleDiff(msh1[3],msh2[3]) > pi/3)
+{
+# Insert the white midpoint by setting one end to white and adjusting the scalar value.
+Mmid <- max(88.0, msh1[1], msh2[1])
+#Mmid <- max(Mmid)
+if (s < 0.5)
+{
+msh2[1] <- Mmid;  msh2[2] <- 0.0;  msh2[3] <- 0.0;s <- 2.0*s
+} else {
+msh1[1] <- Mmid;  msh1[2] <- 0.0;  msh1[3] <- 0.0; s <- 2.0*s - 1.0
+}
+}
+# If one color has no saturation, then its hue value is invalid.  In this
+# case, we want to set it to something logical so that the interpolation of hue makes sense.
+        if ((msh1[2] < 0.05) & (msh2[2] > 0.05))
+            msh1[3] <- AdjustHue(msh2, msh1[1]) else if ((msh2[2] < 0.05) & (msh1[2] > 0.05)) msh2[3] <- AdjustHue(msh1, msh2[1])
+	mshTmp<-msh1
+        mshTmp[1] <- (1-s)*msh1[1] + s*msh2[1]
+        mshTmp[2] <- (1-s)*msh1[2] + s*msh2[2]
+        mshTmp[3]<- (1-s)*msh1[3] + s*msh2[3]
+        # Now convert back to the desired color space
+ as(MshToLab(mshTmp),outColorspace)
+}
+dvmap<-matrix(0,length(s),3)
+for (n in 1:length(s)) dvmap[n,]<-diverging.map.1val(s[n], rgb1, rgb2, outColorspace)@coords
+dvmap
+}
+
+gp.XYcoords.convert.fun<-function(xyfile,newxyfile,fun1,fun2,swapXY=FALSE)
+{#read a XY data file and change the coords according to 2 functions
+z<-read.table(xyfile, header = F,sep=' ',strip.white=TRUE,blank.lines.skip=TRUE)
+z<-z[,c(1,3,5)]
+z[1]<-fun1(z[1])
+z[2]<-fun2(z[2])
+if (swapXY) z2 <-data.matrix(z[,c(2,1,3)]) else z2 <-data.matrix(z)
+uniqz2<-unique(z2[,1])
+if (file.exists(newxyfile)) file.remove(newxyfile)
+for (uz in uniqz2) {write(t(z2[which(z2[,1]==uz),]),newxyfile,ncolumns = 3,append=TRUE);cat('\n',file=newxyfile,append=TRUE)}
+}
+
+gp.plotFunction <- function(x, xlab='x', ylab='y', main='', type='l',...){
+#coded by Oscar Perpinan Lamigueiro
 if (!is.character(x)) stop('Argument <<x>> should be a string')
 if (!is.character(xlab)) stop('Argument <<xlab>> should be a string')
 if (!is.character(ylab)) stop('Argument <<ylab>> should be a string')
 if (!is.character(main)) stop('Argument <<main>> should be a string')
 if (!is.character(type)) stop('Argument <<type>> should be a string')
-
   h1<-gp.init()
-
   gp.set.xlabel(h1, xlab)
   gp.set.ylabel(h1, ylab)
-
   style <- switch(type,
                   l = 'lines',
                   p = 'points'
                   )
   gp.setstyle(h1, style)
-
   gp.plot.equation(h1, as.character(x), main)
-  
   gp.pause()
   h1<-gp.close(h1)
 }
 
 gp.splot <- function(x, type = c('hidden3d', 'pm3d', 'map', 'contour')){
-  
+  #coded by Oscar Perpinan Lamigueiro
 if (!is.numeric(x)) stop('Argument <<x>> should be numeric')
 if (!is.numeric(x)) stop('Argument <<x>> should be numeric')
 
@@ -65,7 +1054,7 @@ if (!is.numeric(x)) stop('Argument <<x>> should be numeric')
 }
 
 gp.plotPolyFit <- function(x, y, order){
-
+#coded by Oscar Perpinan Lamigueiro
 if (!is.numeric(x)) stop('Argument <<x>> should be numeric')
 if (!is.numeric(y)) stop('Argument <<y>> should be numeric')
 if (!is.numeric(order)) stop('Argument <<order>> should be numeric')
@@ -196,7 +1185,7 @@ gp.h <- function(handle, gnustring)
 gp.CheckHandle(handle)
 if (!is.character(gnustring)) stop('Argument <<gnustring>> should be a string')
 logfile <-tempfile()
-gp.cmd(handle, 'set print "' %s% logfile %s% '";?set samples;set print')
+gp.cmd(handle, 'set print "' %s% logfile %s% '";?' %s% gnustring %s% ';set print')
 gp.file2string(logfile)
 }
 
@@ -208,11 +1197,11 @@ if (!is.character(PNGfile)) stop('Argument <<PNGfile>> should be a string')
 if (!is.character(RGBfile)) stop('Argument <<RGBfile>> should be a string')
 if (!is.logical(forceRGB)) stop('Argument <<forceRGB>> should be logical')
 if (!file.exists(PNGfile)) stop('Error! File ' %s% PNGfile %s% ' does not exist' )
-p<-readPNG(PNGfile)
+p<-png::readPNG(PNGfile)
 p<-p*255
 numrows<-dim(p)[1]
 numcols<-dim(p)[2]
-cat(dim(p)[3])
+#cat(dim(p)[3])
 to.write = file(RGBfile, "wb")
 if (forceRGB) rgbsize <- 3 else rgbsize <- 4
 for (m in 1:numrows)
@@ -224,24 +1213,7 @@ temp <- as.vector(as.integer(p[m,n,1:rgbsize]), mode = 'raw')
 close( to.write )
 }
 
-gp.RGB2PNG<-function(RGBfile, PNGfile,width,height)
-{#converts an RGB file to a PNG file
-library('png', character.only=TRUE)
-if (!is.character(RGBfile)) stop('Argument <<RGBfile>> should be a string')
-if (!is.character(PNGfile)) stop('Argument <<PNGfile>> should be a string')
-if (!is.numeric(width)) stop('Argument <<width>> should be integer')
-if (!is.numeric(height)) stop('Argument <<height>> should be integer')
-if (!file.exists(RGBfile)) stop('Error! File ' %s% RGBfile %s% ' does not exist' )
-RGBsize <- file.info(RGBfile)$size
-to.read = file(RGBfile, "rb")
-RGBbin <- readBin(to.read, raw(), n = RGBsize, size = 1)
-close(to.read)
-matRGB <- array(0,c(width,height,3))
-matRGB[,,1] <- matrix(as.integer(RGBbin[(1:(RGBsize/3))*3-2]),width,height,byrow=TRUE)
-matRGB[,,2] <- matrix(as.integer(RGBbin[(1:(RGBsize/3))*3-1]),width,height,byrow=TRUE)
-matRGB[,,3] <- matrix(as.integer(RGBbin[(1:(RGBsize/3))*3]),width,height,byrow=TRUE)
-writePNG(matRGB/255.0, target = PNGfile)
-}
+
 
 gp.matrixr2gnu <- function(rmatrix, gnufile)
 {#saves an R matrix in a format that can be read by gnuplot
@@ -445,7 +1417,7 @@ gp.cmd(handle, 'cd \"' %s% wd %s% '\"')
 gp.PNG4DEM<-function(filePNG, fileDEMtab, file3Ddat)
 {# converts a PNG file and a DEM tab separated to a text format readable by gnuplot 
 p<-gp.PNG2color(filePNG)
-z<-read.delim(fileDEMtab,sep=' ')
+z<-read.delim(fileDEMtab,header=FALSE, stringsAsFactors =FALSE,comment.char = "#",sep=' ')#
 numrows<-nrow(z)
 numcols<-ncol(z)
 z2<-matrix(unlist(z),nrow=numrows)
@@ -461,7 +1433,7 @@ gp.PNG2color<-function(fileName)
 {# converts a PNG file to a text format readable by gnuplot 
 library('png', character.only=TRUE) #
 if (!file.exists(fileName)) stop('Error! File does not exist' )
-p<-readPNG(fileName)
+p<-png::readPNG(fileName)
 p<-p*255
 numrows<-dim(p)[1]
 numcols<-dim(p)[2]
@@ -478,10 +1450,11 @@ gp.matrix2XYdata<-function(fileName1,fileName2,optMatrix=NA,surfacegrid=FALSE,ov
 if (!file.exists(fileName1)) stop('Error! File does not exist' )
 if (overwrite==FALSE & file.exists(fileName2)) stop('Error! File already exists' )
 if (overwrite==TRUE & file.exists(fileName2)) file.remove(fileName2)
-z<-read.delim(fileName1,sep=' ')
+z<-read.table(fileName1,sep=' ')
 numrows<-nrow(z)
 numcols<-ncol(z)
 z<-matrix(unlist(z),nrow=numrows)
+#cat((dim(optMatrix)[1]),' ',(numrows*numcols),'\n')
 if(class(optMatrix)=='matrix') if(dim(optMatrix)[1]!=numrows*numcols) stop('Error! The optional matrix has incorrect dimensions' )
 #optMatrix<-matrix(unlist(optMatrix),nrow=numrows)
 c=1
@@ -499,7 +1472,10 @@ if(surfacegrid) cat(file=fileName2,'\n\n',append=TRUE) else cat(file=fileName2,'
 
 gp.pauseX<-function(delaySecs=2)
 {# pauses the system for a number of seconds and then waits for the user to press a key, X11 only
+if (!interactive()) return#return if not in interactive mode
 print('Pause - close window to continue')
+scounter<-0
+while ((!gp.isWindowOpen(0)) & (scounter<50)) { Sys.sleep(0.1);scounter<-scounter+1 } # wait for the graphics window to show up, for very slow calculations
 repeat
 {
 Sys.sleep(delaySecs)
@@ -509,12 +1485,48 @@ if(!gp.isWindowOpen(0)) break
 
 gp.pause<-function(delaySecs=2)
 {# pauses the system for a number of seconds and then waits for the user to press a key, detecs X11 beforehand
-#print(X11.present)
-if (gp.X11.present()) gp.pauseX(delaySecs)
+if (!interactive()) return#return if not in interactive mode
+if (is.na(pauseterm.present)) pauseterm.present<-gp.pausableterm()
+if (pauseterm.present) gp.pauseX(delaySecs)
 else {
 Sys.sleep(delaySecs)
 readline(prompt = "Pause. Press <Enter> to continue...")
 }
+}
+
+gp.showterm<-function()
+{#get gnuplot's current terminal
+logfile <- tempfile()
+handle<-gp.init.save.stderr(logfile)
+gp.cmd(handle, 'set print "' %s% logfile %s% '";show term;set print')
+Sys.sleep(1) #wait 1 second
+handle<-gp.close(handle)
+s<-gp.file2string(logfile)
+s
+}
+
+gp.pausableterm<-function()
+{#returns TRUE if the current terminal can be paused
+if (is.na(pauseterm.present))
+{
+options(warn=-1)
+curTerm <- gp.showterm()
+curTerm <- sub('\\s+terminal type is ', '', curTerm)
+curTerm <- sub('\\s+\\d+\n$', '', curTerm)
+if (curTerm %in% c('wxt','x11','qt','Windows')) pauseterm.present <-TRUE  else pauseterm.present <- FALSE
+}
+pauseterm.present
+}
+
+gp.set.term<-function(optionalNewTerminal='')
+{#set gnuplot's current terminal or get a list of all available terminals
+logfile <- tempfile()
+handle<-gp.init.save.stderr(logfile)
+gp.cmd(handle, 'set print "' %s% logfile %s% '";set term ' %s% optionalNewTerminal %s% ';set print')
+Sys.sleep(1) #wait 1 second
+handle<-gp.close(handle)
+s<-gp.file2string(logfile)
+s
 }
 
 gp.isWindowOpen<-function(windowid)
@@ -528,13 +1540,9 @@ return(grepl('Normal',rtxt[2]) | grepl('Iconic',rtxt[2]))#return true if the win
 
 gp.X11.present<-function()
 {# returns true if X11 is present in the system
-if (is.na(X11.present))
-{
 options(warn=-1)
 rtxt<-system('echo $DISPLAY')
-if (length(rtxt)==0) X11.present <- FALSE else X11.present <- TRUE
-}
-X11.present
+if (length(rtxt)==0)  return (TRUE) else return (FALSE)
 }
 
 gp.pidX11<-function(windowid=0)

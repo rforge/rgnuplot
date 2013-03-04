@@ -28,9 +28,9 @@ plot.binomial <- function(panel) {
    with(panel, {
 
 s1 <- 'mx = ' %s% mx %s% '
-sigx <- ' %s% sigx %s% '
-my <- ' %s% my %s% '
-sigy <- ' %s% sigy %s% '
+sigx <- sqrt(' %s% sigx %s% ')
+my <- sqrt(' %s% my %s% '
+sigy <- ' %s% sigy %s% ')
 sc <- ' %s% sc
 
 gp.resetplot(h1)
@@ -51,11 +51,11 @@ sigy = 1.725,
 sc = 0.5, dev.number = dev.cur())
    rp.slider(pname, mx, -5, 5, initval = 0.0, title = "μx:", 
                    action = plot.binomial)
-   rp.slider(pname, sigx, 0, 5, initval = 0.77, title = "σx:", 
+   rp.slider(pname, sigx, 0, 5, initval = 0.77, title = "σ²(x):", 
                    action = plot.binomial)               
    rp.slider(pname, my, -5, 5, initval = 0.61, title = "μy:", 
                    action = plot.binomial)
-   rp.slider(pname, sigy, 0, 5, initval = 1.725, title = "σy:", 
+   rp.slider(pname, sigy, 0, 5, initval = 1.725, title = "σ²(y):", 
                    action = plot.binomial)               
    rp.slider(pname, sc, -1, 1, initval = .5, title = "ρ:", 
                    action = plot.binomial)    

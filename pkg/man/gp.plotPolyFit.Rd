@@ -8,7 +8,7 @@
 \item{order}{ order of the polynomial}}
 \value{	none}
 \seealso{	\code{\link{gp.init}}}
-\author{Jose' Gama and Oscar Perpi\~{n}\'{a}n Lamigueiro}
+\author{Oscar Perpi\~{n}\'{a}n Lamigueiro}
 \examples{
 polnorder <- 7# order of the polynomial
 npoints <- 20 # number of points to plot
@@ -16,6 +16,6 @@ xpoints <- ( 0:npoints ) * 0.1 # x values
 wpoints <- c(1,10^ -( 0:polnorder )) # "a" to "h" values
 xPower <- outer(xpoints, 0:7, '^')
 ypoints <- colSums(wpoints[1:8] * t(xPower))
-gp.plotPolyFit(xpoints, ypoints, 7)
+\dontrun{gp.plotPolyFit(xpoints, ypoints, 7)}
 }
 \keyword{programming}

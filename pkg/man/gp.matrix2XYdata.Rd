@@ -1,6 +1,6 @@
 \name{gp.matrix2XYdata}
 \alias{gp.matrix2XYdata}
-\title{converts a file to X, Y format}
+\title{Converting a file to X, Y format}
 \description{\code{gp.matrix2XYdata} converts a file with data in matrix format to an X, Y format readable by gnuplot}
 \usage{gp.matrix2XYdata(fileName1,fileName2,optMatrix=NA,surfacegrid=FALSE,overwrite=TRUE)}
 \arguments{	\item{fileName1}{ file with data in matrix format}

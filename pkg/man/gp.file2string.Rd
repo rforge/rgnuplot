@@ -8,7 +8,6 @@
 \seealso{	\code{\link{gp.init}}}
 \author{Jose' Gama}
 \examples{
-require(Rgnuplot)
 #"Hello World!" - loading and executing a gnuplot script from Rgnuplot
 #Initialize the gnuplot handle
 h1<-gp.init()
@@ -22,9 +21,9 @@ gpfile <- system.file(package='Rgnuplot') %s% '/extdata/helloworld.gnu'
 #load script into a string
 s<-gp.file2string(gpfile)
 #send gnuplot commands
-gp.cmd(h1,s)
+\dontrun{gp.cmd(h1,s)
 #pause R and gnuplot
-gp.pause()
+gp.pause()}
 #close gnuplot handle
 h1<-gp.close(h1)
 }

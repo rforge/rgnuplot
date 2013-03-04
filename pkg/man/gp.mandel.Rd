@@ -21,10 +21,10 @@ gp.setwd(h1)
 #create the fractal data from R calling a C function, with more points and more iterations
 mandelxy2<-function(x,y) gp.mandel(x,y,c(0,0),0,1000)
 gp.R2splot(mandelxy2,'mandel4.dat',c(-1.5,0.5),c(-1,1),c(500,500),c(300,300),TRUE)
-gp.cmd(h1,'reset
+\dontrun{gp.cmd(h1,'reset
 splot "mandel4.dat" w  pm3d notitle')
 #pause R and gnuplot
-gp.pause()
+gp.pause()}
 #close gnuplot handles
 h1<-gp.close(h1)
 }
