@@ -16,8 +16,9 @@ gp.setwd(h1)
 #load the file 'simple.dem'
 #gp.cmd(h1, 'set terminal postscript eps color;set output "simple.eps"\n' 
 # %s% gp.URL2string('http://gnuplot.sourceforge.net/demo_svg/simple.1.gnu') %s% '\nset terminal X11;set output')
+\dontrun{
 if (!file.exists('/usr/share/doc/gnuplot-doc/examples/simple.dem')) stop('Please install gnuplot-doc')
-\dontrun{gp.load.demo(h1, '/usr/share/doc/gnuplot-doc/examples/simple.dem')
+gp.load.demo(h1, '/usr/share/doc/gnuplot-doc/examples/simple.dem')
 #pause R and gnuplot
 gp.pause()}
 # example of gp.readURL2string
