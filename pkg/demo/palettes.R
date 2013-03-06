@@ -97,7 +97,7 @@ splot [0:' %s% n %s% '][0:' %s% n %s% '] "randomMtrxb.dat" matrix w pm3d notitle
 gpfile <- system.file('extdata/blutux.rgb', package='Rgnuplot')
 if (!file.exists('blutux.rgb')) file.copy(gpfile,getwd())
 if (!file.exists('blutux.png')) gp.RGB2image('blutux.rgb','blutux.png',128,128)# convert from raw RGB to PNG
-?gp.RGB2image
+
 PNGdata<-gp.PNG2color('blutux.png')#get the color matrix from a PNG file
 str(PNGdata)
 gp.matrixr2gnu(PNGdata,'blutuxRGBfullColorMatrix.dat')#save the color matrix to a file
@@ -251,9 +251,6 @@ gp.RGB1to3channels(paletteRGBx,fileRGB3channel=testmap %s% '.pal')#save the pale
 PNGdataIndexedx<-gp.CreateIndexFromMatrixAndPalette(PNGdata, paletteRGBx)#create an indexed color matrix
 #str(PNGdataIndexed)
 gp.matrixr2gnu(PNGdataIndexedx,testmap %s% '.dat')#save the indexed color matrix to a file
-
-An image mapped into a surface might show some distortion on one side when viewed from certain angles, however a few degrees away from those angles will correct this problem.
-The command set view can also show the wrong perspective as it can be seen on the next example by using the commented view for the globe on the second row and second column.
 
 # plot 6 views of the sphere
 gp.run('set angles degrees

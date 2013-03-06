@@ -1,6 +1,5 @@
 \name{gp.showterm}
 \alias{gp.showterm}
-\alias{gp.set.term}
 \title{ Get gnuplot's current terminal}
 \description{\code{gp.showterm} gets gnuplot's current terminal
 \code{gp.set.term} sets gnuplot's current terminal or gets a list of all available terminals

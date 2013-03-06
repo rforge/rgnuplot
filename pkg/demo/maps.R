@@ -3,7 +3,7 @@ library(Rgnuplot)
 #convert the map of the world from the R package maps into a format readable by gnuplot
 library(maps)
 gp.mapsr2gnu(map('world',plot=FALSE),'worldRmap.dat')
-#plot the map of the world - cartesian coordinate system by default - Equirectangular Projection (plate carrée projection)
+#plot the map of the world - cartesian coordinate system by default - Equirectangular Projection (plate carree projection)
 gp.run('#set terminal png;set output "worldRmap.png"
 unset key
 unset xtics
