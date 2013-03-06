@@ -113,7 +113,7 @@ for (j in 1:numcols) {
 p2.segs <- na.omit(XY)
 # save segments for reuse
 tmp<-tempfile()
-write.table(p2.segs, tmp, row.names=FALSE, sep=" ",col.name=FALSE)
+write.table(p2.segs, tmp, row.names=FALSE, sep=" ",col.names=FALSE)
 gp.run('!awk \'(FNR+1) % 2 == 0 {print ""} 1\' ' %s% tmp %s% ' > ' %s%  landoutlinefile ,FALSE)
 }
 
