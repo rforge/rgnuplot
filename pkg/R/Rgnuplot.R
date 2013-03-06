@@ -470,7 +470,7 @@ if (!is.character(imagefile)) stop('Argument <<imagefile>> should be a string')
 if (!is.numeric(width)) stop('Argument <<width>> should be integer')
 if (!is.numeric(height)) stop('Argument <<height>> should be integer')
 if (!file.exists(RGBfile)) stop('Error! File ' %s% RGBfile %s% ' does not exist' )
-if (is.null(terminal)) terminal<-gp.ext2terminal(filetype)
+if (is.null(gpterminal)) gpterminal<-gp.ext2terminal(filetype)
 gp.run('set terminal ' %s% gpterminal %s% ' size ' %s% width %s% ',' %s% height %s% ';set output "' %s% imagefile %s% '"
 set size ratio -1
 set lmargin 0

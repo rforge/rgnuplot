@@ -96,7 +96,8 @@ splot [0:' %s% n %s% '][0:' %s% n %s% '] "randomMtrxb.dat" matrix w pm3d notitle
 #creating a matrix with the full color RGB values of blutux.png
 gpfile <- system.file('extdata/blutux.rgb', package='Rgnuplot')
 if (!file.exists('blutux.rgb')) file.copy(gpfile,getwd())
-if (!file.exists('blutux.png')) gp.RGB2PNG('blutux.rgb','blutux.png',128,128)# convert from raw RGB to PNG
+if (!file.exists('blutux.png')) gp.RGB2image('blutux.rgb','blutux.png',128,128)# convert from raw RGB to PNG
+?gp.RGB2image
 PNGdata<-gp.PNG2color('blutux.png')#get the color matrix from a PNG file
 str(PNGdata)
 gp.matrixr2gnu(PNGdata,'blutuxRGBfullColorMatrix.dat')#save the color matrix to a file

@@ -49,15 +49,15 @@ rp.binomial <- function() {
 my = 0.61,
 sigy = 1.725,
 sc = 0.5, dev.number = dev.cur())
-   rp.slider(pname, mx, -5, 5, initval = 0.0, title = "μx:", 
+   rp.slider(pname, mx, -5, 5, initval = 0.0, title = "ux:", 
                    action = plot.binomial)
-   rp.slider(pname, sigx, 0, 5, initval = 0.77, title = "σ²(x):", 
+   rp.slider(pname, sigx, 0, 5, initval = 0.77, title = "var(x):", 
                    action = plot.binomial)               
-   rp.slider(pname, my, -5, 5, initval = 0.61, title = "μy:", 
+   rp.slider(pname, my, -5, 5, initval = 0.61, title = "uy:", 
                    action = plot.binomial)
-   rp.slider(pname, sigy, 0, 5, initval = 1.725, title = "σ²(y):", 
+   rp.slider(pname, sigy, 0, 5, initval = 1.725, title = "var(y):", 
                    action = plot.binomial)               
-   rp.slider(pname, sc, -1, 1, initval = .5, title = "ρ:", 
+   rp.slider(pname, sc, -1, 1, initval = .5, title = "p:", 
                    action = plot.binomial)    
 rp.button(pname, { h1<-gp.close(h1);h2<-gp.close(h2);break } , title = 'Close', quitbutton=TRUE)
    }

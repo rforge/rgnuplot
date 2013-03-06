@@ -33,7 +33,7 @@ set cbrange [-4.3:8.1]
 set xrange[-179:179]
 set yrange[-89:89]
 set palette defined ( -4.3 "#7f00ff", -4 "#7f00ff", -4 "#4094ff", -2 "#4094ff", -2 "#78ccff", -1 "#78ccff", -1 "#98ecfd", -.5 "#98ecfd", -.5 "#d8fdd8",  -.2 "#d8fdd8", -.2 "#fdfdfd", .2 "#fdfdfd", .2 "#fdfd4b", .5 "#fdfd4b", .5 "#fdcb00", 1 "#fdcb00", 1 "#fd7e00", 2 "#fd7e00", 2 "#fd0000", 4 "#fd0000", 4 "#7e0000", 8.1 "#7e0000", 8.2 "#9d9d9d")
-set format "%g°"
+set format "%g"
 plot "' %s% anomalyData %s% '" every ::2 u (int($3)):(int($4)):(($5>8 & $5<9999)?8:$5) w image, "worldRmap.dat" u 1:2 w l lc rgb "black" notit',TRUE) #skip the first 2 lines, trim to max 8
 
 # the data must be changed so that splot can use it
@@ -58,7 +58,7 @@ set hidden3d front offset 0 trianglepattern 3 undefined 1 altdiagonal bentover
 set view equal xyz
 set view 80,270,1,1
 set palette defined ( -4.3 "#7f00ff", -4 "#7f00ff", -4 "#4094ff", -2 "#4094ff", -2 "#78ccff", -1 "#78ccff", -1 "#98ecfd", -.5 "#98ecfd", -.5 "#d8fdd8",  -.2 "#d8fdd8", -.2 "#fdfdfd", .2 "#fdfdfd", .2 "#fdfd4b", .5 "#fdfd4b", .5 "#fdcb00", 1 "#fdcb00", 1 "#fd7e00", 2 "#fd7e00", 2 "#fd0000", 4 "#fd0000", 4 "#7e0000", 8.1 "#7e0000", 8.2 "#9d9d9d")
-set format "%g°"
+set format "%g"
 set cbrange [-4.3:8.1]
 set isosamples 9
 set pm3d corners2color c1
@@ -80,7 +80,7 @@ set yzeroaxis linetype 0 linewidth 1.000
 set urange [ -90.0000 : 90.0000 ] noreverse nowriteback
 set vrange [ -180.0000 : 180.0000 ] noreverse nowriteback
 set palette defined ( -4.3 "#7f00ff", -4 "#7f00ff", -4 "#4094ff", -2 "#4094ff", -2 "#78ccff", -1 "#78ccff", -1 "#98ecfd", -.5 "#98ecfd", -.5 "#d8fdd8",  -.2 "#d8fdd8", -.2 "#fdfdfd", .2 "#fdfdfd", .2 "#fdfd4b", .5 "#fdfd4b", .5 "#fdcb00", 1 "#fdcb00", 1 "#fd7e00", 2 "#fd7e00", 2 "#fd0000", 4 "#fd0000", 4 "#7e0000", 8.1 "#7e0000", 8.2 "#9d9d9d")
-set format "%g°"
+set format "%g"
 set cbrange [-4.3:8.1]
 set isosamples 9
 set pm3d interpolate 0,10
@@ -98,7 +98,7 @@ set cbrange [-4.3:8.1]
 set xrange[-179:179]
 set yrange[-89:89]
 set palette defined ( -4.3 "#7f00ff", -4 "#7f00ff", -4 "#4094ff", -2 "#4094ff", -2 "#78ccff", -1 "#78ccff", -1 "#98ecfd", -.5 "#98ecfd", -.5 "#d8fdd8",  -.2 "#d8fdd8", -.2 "#fdfdfd", .2 "#fdfdfd", .2 "#fdfd4b", .5 "#fdfd4b", .5 "#fdcb00", 1 "#fdcb00", 1 "#fd7e00", 2 "#fd7e00", 2 "#fd0000", 4 "#fd0000", 4 "#7e0000", 8.1 "#7e0000", 8.2 "#9d9d9d")
-set format "%g°"
+set format "%g"
 plot "' %s% anomalyData %s% '" every ::2 u (int($3)):(int($4)):(($5>8 & $5<9999)?8:$5) w image,\\
 "earth_dayWATER2deg.dat" w l lw 0.5 lc rgb "black" notit',TRUE)
 
@@ -113,7 +113,7 @@ set cbrange [-4.3:8.1]
 set xrange[-179:179]
 set yrange[-89:89]
 set palette model RGB file "BuOrR_14.txt" every ::2 u 1:2:3
-set format "%g°"
+set format "%g"
 plot "' %s% anomalyData %s% '" every ::2 u 3:4:(($5>999)?0:$5) w image,\\
 "earth_dayWATER2deg.dat" w l lw 0.5 lc rgb "black" notit',TRUE)
 
@@ -139,7 +139,7 @@ set yrange[-89:89]
 set palette file "-"
 ' %s% d3  %s% '
 e
-set format "%g°"
+set format "%g"
 plot "' %s% anomalyData %s% '" every ::2 u 3:4:(($5>999)?0:$5) w image,\\
 "earth_dayWATER2deg.dat" w l lw 0.5 lc rgb "black" notit,\\
 "' %s% anomalyData %s% '" every ::2 u 3:4:(.62):(.62):(.62):(($5<999)?0:150) w rgba notit',TRUE)
@@ -157,7 +157,7 @@ set yrange[-89:89]
 set pm3d map
 splot "' %s% anomalyDataXY %s% '" using (WinkeltripelYC($1,$2)):(WinkeltripelXC($1,$2)):(($2>167 | $2<-167 | $1>85 | $1<-75 )?0/0:1)  w p pt 7 ps 1 lc rgb "grey" notit
 set palette model RGB file "anomaly.pal" u 1:2:3
-set format "%g°"
+set format "%g"
 replot "' %s% anomalyDataXY %s% '" using (WinkeltripelYC($1,$2)):(WinkeltripelXC($1,$2)):(1):(($3<9999)?$3:0/0) w pm3d notit ,\\
 "earth_dayWATER2degS.dat" using (WinkeltripelYC($2,$1)):(WinkeltripelXC($2,$1)):(1) w l lw 0.5 lc rgb "black" notit
 #set term pngcairo;set output "GHCN7.png";replot',TRUE)
@@ -173,7 +173,7 @@ set yrange[-89:89]
 set pm3d map
 splot "' %s% anomalyDataXY %s% '" using (RobinsonYC($1,$2)):(RobinsonXC($1,$2)):(($2>170 | $2<-170 | $1>85 | $1<-84 )?0/0:1)  w p pt 7 ps 1 lc rgb "grey" notit
 set palette model RGB file "anomaly.pal" u 1:2:3
-set format "%g°"
+set format "%g"
 replot "' %s% anomalyDataXY %s% '" using (RobinsonYC($1,$2)):(RobinsonXC($1,$2)):(1):(($3<9999)?$3:0/0) w pm3d notit ,\\
 "earth_dayWATER2degS.dat" using (RobinsonYC($2,$1)):(RobinsonXC($2,$1)):(1) w l lw 0.5 lc rgb "black" notit
 #set term pngcairo;set output "GHCN7.png";replot',TRUE)

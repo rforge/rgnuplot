@@ -3,7 +3,7 @@ library(Rgnuplot)
 #convert the map of the world from the R package maps into a format readable by gnuplot
 library(maps)
 gp.mapsr2gnu(map('world',plot=FALSE),'worldRmap.dat')
-#plot the map of the world - cartesian coordinate system by default - Equirectangular Projection (plate carrée projection)
+#plot the map of the world - cartesian coordinate system by default - Equirectangular Projection (plate carr�e projection)
 gp.run('#set terminal png;set output "worldRmap.png"
 unset key
 unset xtics
@@ -299,7 +299,7 @@ gp.run('#set term png;set output "naturalearthdata_2.png"
 unset key; unset tics;unset border
 plot "ne_110m_coastline.dat" w l lc rgb "black", "worldpar.dat"  w l lc rgb "grey", "worldmer.dat"  w l lc rgb "grey"',TRUE)
 
-# convert the shapefile with Tissot’s indicatrices to a data file format
+# convert the shapefile with Tissot's indicatrices to a data file format
 # using the shapefile from Matthew T. Perry 2005, Tissot Indicatrix - Examining the distortion of map projections http://blog.perrygeo.net/2005/12/11/tissot-indicatrix-examining-the-distortion-of-2d-maps/
 tissfiles<-dir(system.file(package='Rgnuplot')  %s% '/extdata',pattern='tissot')
 if (!all(file.exists(tissfiles))) file.copy(system.file(paste('extdata/', tissfiles,sep=''), package='Rgnuplot'),getwd())
@@ -318,7 +318,7 @@ plot "worldmer.dat" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 3
  "worldpar.dat" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 2, \\
  "NOAACoastline.dat" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 1',TRUE)
 
-# Mercator's Projection with Tissot’s indicatrices
+# Mercator's Projection with Tissot's indicatrices
 gp.run('#set term png;set output "NOAACoastline_Mercator_Tissot.png"
 load "projections.gnu"
 p=MercatorInit(0)

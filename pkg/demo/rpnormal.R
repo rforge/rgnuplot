@@ -40,8 +40,8 @@ gp.cmd(h2,'flag=0\n' %s%s1 %s% '\n' %s% s2)
 rp.normal <- function() {
    #x11(width = 3, height = 3)
    pname <- rp.control("Univariate normal distribution", d1m=0.0, d1d=0.5, dev.number = dev.cur())
-   rp.slider(pname, d1m, -5, 5, initval = 0.0, title = "μ:", action = plot.normal)
-   rp.slider(pname, d1d, 0, 5, initval = 0.5, title = "σ²(x):", action = plot.normal)#    , quitbutton = TRUE
+   rp.slider(pname, d1m, -5, 5, initval = 0.0, title = "u:", action = plot.normal)
+   rp.slider(pname, d1d, 0, 5, initval = 0.5, title = "var(x):", action = plot.normal)#    , quitbutton = TRUE
    #rp.button(pname,"Close", action=b4close)
 rp.button(pname, { h1<-gp.close(h1);h2<-gp.close(h2);break } , title = 'Close', quitbutton=TRUE)
    }
