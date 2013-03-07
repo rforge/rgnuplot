@@ -18,7 +18,7 @@ h1<-gp.init()
 gp.setloadpath(h1)
 #change gnuplot's working directory to be the same as R's working directory (default)
 gp.setwd(h1)
-
+\dontrun{
 nordklim <- read.table(system.file('extdata/NordklimData.tab', package = "Rgnuplot"), stringsAsFactors=FALSE, header=TRUE)
 
 NKmonths <- c('January','February','March','April','May','June','July','August','September','October','November','December')
@@ -30,7 +30,7 @@ gp.matrixr2gnu(nordklimHelsinkiPrecipitation, 'NORDKLIM-Helsinki-prec.dat')
 
 #convert the data file from 12 columns for the monthly data to 2 rows
 gp.cols2rows('NORDKLIM-Helsinki-prec.dat','NORDKLIM-Helsinki-prec-columns.dat')
-
+}
 #close gnuplot handle
 h1<-gp.close(h1)
 }
