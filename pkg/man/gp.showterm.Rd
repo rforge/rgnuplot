@@ -4,8 +4,7 @@
 \description{\code{gp.showterm} gets gnuplot's current terminal
 \code{gp.set.term} sets gnuplot's current terminal or gets a list of all available terminals
 }
-\usage{gp.showterm
-gp.set.term(optionalNewTerminal)
+\usage{gp.showterm(optionalNewTerminal)
 }
 \arguments{	\item{optionalNewTerminal}{ current terminal}
 }

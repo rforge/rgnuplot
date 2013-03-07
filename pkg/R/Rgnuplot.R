@@ -1302,7 +1302,7 @@ gp.init('gnuplot 2>' %s% logfile)
 
 gp.init <- function(optcmd='gnuplot')
 {#initialize gnuplot
-handle<-as.integer(0)
+handle<-0#as.integer(0)
 ret <- .C("Rgnuplot_init",rtrnvalue=handle,as.character(optcmd),DUP = TRUE,PACKAGE="Rgnuplot" )
 ret$rtrnvalue
 }
@@ -1620,7 +1620,7 @@ mytxt
 
 gp.CheckHandle <- function(handle)
 {
-if (class(handle) != 'integer') stop('Argument <<handle>> is not a valid pointer')
+#if (class(handle) != 'integer') stop('Argument <<handle>> is not a valid pointer')
 if (handle==0) stop('Argument <<handle>> is not a valid pointer')
 }
 
