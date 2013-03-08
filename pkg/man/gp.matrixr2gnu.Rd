@@ -15,16 +15,15 @@ h1<-gp.init()
 gp.setloadpath(h1)
 #change gnuplot's working directory to be the same as R's working directory (default)
 gp.setwd(h1)
-
+\dontrun{
 nordklim <- read.table(system.file('extdata/NordklimData.tab', package = "Rgnuplot"), stringsAsFactors=FALSE, header=TRUE)
-
 NKmonths <- c('January','February','March','April','May','June','July','August','September','October','November','December')
 #choose Helsinki (code 304) and country (code 'FIN') Precipitation (code 601)
 nordklimHelsinkiPrecipitation <- nordklim[which((nordklim$NordklimNumber==304) & (nordklim$CountryCode=='FIN') & (nordklim$ClimateElement==601)),c('FirstYear',NKmonths)]
 nordklimHelsinkiPrecipitation <- as.matrix(nordklimHelsinkiPrecipitation)
 #save to a data file
 gp.matrixr2gnu(nordklimHelsinkiPrecipitation, 'NORDKLIM-Helsinki-prec.dat')
-
+}
 #close gnuplot handle
 h1<-gp.close(h1)
 }
