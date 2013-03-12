@@ -26,14 +26,15 @@
 /*---------------------------------------------------------------------------
                                 Includes
  ---------------------------------------------------------------------------*/
-
+#include <R.h>
 #include "gnuplot_i.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <assert.h>
+#define assert(ignore)((void) 0)
+//#include <assert.h>
 
 #ifdef WIN32
 #include <io.h>
@@ -100,7 +101,8 @@ gnuplot_ctrl * gnuplot_init2(char const * optcmd)
 
 #ifndef WIN32
     if (getenv("DISPLAY") == NULL) {
-        fprintf(stderr, "cannot find DISPLAY variable: is it set?\n") ;
+        //fprintf(stderr, "cannot find DISPLAY variable: is it set?\n") ;
+        REprintf("cannot find DISPLAY variable: is it set?\n");
     }
 #endif // #ifndef WIN32
 
@@ -115,7 +117,8 @@ gnuplot_ctrl * gnuplot_init2(char const * optcmd)
 
     handle->gnucmd = popen(optcmd, "w") ;
     if (handle->gnucmd == NULL) {
-        fprintf(stderr, "error starting gnuplot, is gnuplot or gnuplot.exe in your path?\n") ;
+        //fprintf(stderr, "error starting gnuplot, is gnuplot or gnuplot.exe in your path?\n") ;
+        REprintf("error starting gnuplot, is gnuplot or gnuplot.exe in your path?\n");
         free(handle) ;
         return NULL ;
     }
@@ -146,7 +149,8 @@ void gnuplot_close(gnuplot_ctrl * handle)
     int     i ;
 
     if (pclose(handle->gnucmd) == -1) {
-        fprintf(stderr, "problem closing communication to gnuplot\n") ;
+        //fprintf(stderr, "problem closing communication to gnuplot\n") ;
+        REprintf("problem closing communication to gnuplot\n");
         return ;
     }
     if (handle->ntmp) {
@@ -195,7 +199,8 @@ void gnuplot_cmd(gnuplot_ctrl *  handle, char const *  cmd, ...)
     vfprintf(handle->gnucmd, cmd, ap);
     va_end(ap);
 
-    fputs("\n", handle->gnucmd) ;
+    //fputs("\n", handle->gnucmd) ;
+fprintf(handle->gnucmd, "\n");
     fflush(handle->gnucmd) ;
     return ;
 }
@@ -234,7 +239,8 @@ void gnuplot_setstyle(gnuplot_ctrl * h, char * plot_style)
         strcmp(plot_style, "errorbars") &&
         strcmp(plot_style, "boxes") &&
         strcmp(plot_style, "boxerrorbars")) {
-        fprintf(stderr, "warning: unknown requested style: using points\n") ;
+        //fprintf(stderr, "warning: unknown requested style: using points\n") ;
+        REprintf("warning: unknown requested style: using points\n");
         strcpy(h->pstyle, "points") ;
     } else {
         strcpy(h->pstyle, plot_style) ;
@@ -353,7 +359,8 @@ void gnuplot_plot_x(
     tmpfd = fopen(tmpfname, "w");
 
     if (tmpfd == NULL) {
-        fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        //fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        REprintf("cannot create temporary file: exiting plot");
         return ;
     }
 
@@ -420,7 +427,8 @@ void gnuplot_plot_xy(
     tmpfd = fopen(tmpfname, "w");
 
     if (tmpfd == NULL) {
-        fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        //fprintf(stderr,"cannot create temporary file: exiting plot") ;
+        Rprintf("cannot create temporary file: exiting plot");
         return ;
     }
 
@@ -676,9 +684,8 @@ char const * gnuplot_tmpfile(gnuplot_ctrl * handle)
 
     /* Open one more temporary file? */
     if (handle->ntmp == GP_MAX_TMP_FILES - 1) {
-        fprintf(stderr,
-                "maximum # of temporary files reached (%d): cannot open more",
-                GP_MAX_TMP_FILES) ;
+        //fprintf(stderr,"maximum # of temporary files reached (%d): cannot open more", GP_MAX_TMP_FILES) ;
+        REprintf("maximum # of temporary files reached (%d): cannot open more", GP_MAX_TMP_FILES);
         return NULL;
     }
 

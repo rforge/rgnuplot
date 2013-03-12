@@ -13,6 +13,7 @@ set yrange[-89:89]#latitude
 plot "worldRmap.dat" w l lc rgb "black"',TRUE)
 
 #convert the map of New Zealand from the R package mapdata into a format readable by gnuplot
+library(mapdata)
 gp.mapsr2gnu(map('world2Hires', c('New Zealand:Stewart Island', 'New Zealand:South Island','New Zealand:North Island','New Zealand:Great Barrier Island','New Zealand:Auckland Island'),plot=FALSE)
 ,'NewZealand.dat')
 #plot the map of the world in black and New Zealand in red

@@ -29,9 +29,11 @@ h1=gnuplot_init2(*optcmd);
 void Rgnuplot_send(gnuplot_ctrl  **handle, char const **cmd)
 {
 gnuplot_ctrl  * hh=*handle;
-fputs(*cmd, hh->gnucmd);
-fputs("\n", hh->gnucmd) ;
-fflush(hh->gnucmd) ;
+//fputs(*cmd, hh->gnucmd);
+//fputs("\n", hh->gnucmd);
+fprintf(hh->gnucmd, *cmd);
+fprintf(hh->gnucmd, "\n");
+fflush(hh->gnucmd);
 }
 
 //	*	*	*	Function "gnuplot_close" Package "gnuplot"		*	*	*
@@ -64,7 +66,8 @@ va_start(argp, cmd);
 for(p = *cmd; *p != '\0'; p++) {
 if(*p == '%') subspecPos=0;
 if(subspecPos==-1) {
-			fputc(*p, hh->gnucmd);
+			//fputc(*p, hh->gnucmd);
+fprintf(hh->gnucmd, "%c", *p);
 			continue;
 		}
 subspecs[subspecPos++]=*p;
@@ -80,7 +83,8 @@ i2 = va_arg(argp, int**);
 i=(int)*i2;
 sprintf(str,subspecs,i);
 //printf("$%s$", subspecs);printf("$%s$", str);
-fputs(str, hh->gnucmd);
+//fputs(str, hh->gnucmd);
+fprintf(hh->gnucmd, str);
 subspecPos=-1;
 			break;
 
@@ -95,7 +99,8 @@ d2 = va_arg(argp, double**);
 d=(double)*d2;
 sprintf(str,subspecs,d);
 //printf("$%s$", subspecs);printf("$%s$", str);
-fputs(str, hh->gnucmd);
+//fputs(str, hh->gnucmd);
+fprintf(hh->gnucmd, str);
 subspecPos=-1;
 break;
 
@@ -109,7 +114,8 @@ subspecs[subspecPos+1]=0;
 ui=(unsigned)*ui2;
 			sprintf(str,subspecs,ui);
 //printf("$%s$", subspecs);printf("$%s$", str);
-fputs(str, hh->gnucmd);
+//fputs(str, hh->gnucmd);
+fprintf(hh->gnucmd, str);
 subspecPos=-1;
 			break;
 case 'c':
@@ -119,13 +125,15 @@ subspecs[subspecPos+1]=0;
 s2 = va_arg(argp, char ****);
 s=(char*)*s2;
 //printf("$%s$", subspecs);printf("$%s$", s);
-			fputs(s, hh->gnucmd);
+			//fputs(s, hh->gnucmd);
+fprintf(hh->gnucmd, s);
 subspecPos=-1;
 			break;
 		case '%':
 subspecs[subspecPos++]=*p;
 subspecs[subspecPos+1]=0;
-			putc('%', hh->gnucmd);
+			//putc('%', hh->gnucmd);
+fprintf(hh->gnucmd, "%c", '%');
 subspecPos=-1;
 			break;
 default :
@@ -135,7 +143,8 @@ break;
 	}
 
 	va_end(argp);
-fputs("\n", hh->gnucmd) ;
+//fputs("\n", hh->gnucmd) ;
+fprintf(hh->gnucmd, "\n");
 fflush(hh->gnucmd) ;
 }
 
