@@ -20,10 +20,9 @@ gp.setwd(h1)
 if (!file.exists('/usr/share/doc/gnuplot-doc/examples/simple.dem')) stop('Please install gnuplot-doc')
 gp.load.demo(h1, '/usr/share/doc/gnuplot-doc/examples/simple.dem')
 #pause R and gnuplot
-gp.pause()}
+gp.pause()
 # example of gp.readURL2string
 #Kuen's Surface
-\dontrun{
 gpcode<-gp.URL2string('http://gnuplot.sourceforge.net/demo/transparent_solids.2.gnu')
 #send gnuplot script
 #gp.cmd(h1, 'set terminal postscript eps color;set output "KuensSurface.eps"\n' %s% gpcode)

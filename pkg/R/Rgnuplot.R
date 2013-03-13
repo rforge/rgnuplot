@@ -60,7 +60,7 @@ if (!returnCode) gp.run(s,TRUE) else return(s %s% '\n')
 
 gp.matrix2PNG<-function(matM,PNGfile)
 {# saves a matrix with a mask of a map to a PNG file
-library('png')
+library('png', character.only=TRUE)
 Mwidth<-dim(matM)[1]
 Mheight<-dim(matM)[2]
 matM<-matM[,Mheight:1]

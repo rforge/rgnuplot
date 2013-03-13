@@ -11,7 +11,7 @@
 #Initialize the gnuplot handle
 h1<-gp.init()
 #returns TRUE for valid handle
-gp.CheckHandle(h1)
+\dontrun{gp.CheckHandle(h1)}
 #close gnuplot handle
 h1<-gp.close(h1)
 #this generates an error

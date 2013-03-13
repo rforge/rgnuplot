@@ -11,9 +11,9 @@
 \examples{
 #Initialize the gnuplot handle
 h1<-gp.init()
-
+\dontrun{
 gp.getvariable(h1,'pi')
-
+}
 #close gnuplot handle
 h1<-gp.close(h1)
 }

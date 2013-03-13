@@ -11,13 +11,12 @@
 \examples{
 #Initialize the gnuplot handle
 h1<-gp.init()
-
+\dontrun{
 #set gnuplot's additional search directories for fonts, to the extdata directory from Rgnuplot (default)
 gp.setfontpath(h1)
-
 #get gnuplot's additional search directories for fonts
 gp.getfontpath(h1)
-
+}
 #close gnuplot handle
 h1<-gp.close(h1)
 }

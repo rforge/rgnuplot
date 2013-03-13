@@ -5,6 +5,7 @@ Author: Jose' Gama
 SystemRequirements: gnuplot
 Maintainer: Jose' Gama <jgama@abo.fi>
 Description: Rgnuplot, R interface for gnuplot
-        Based on gnuplot\_i version 1.11, the GPL code from Nicolas Devillard.
+        Based on gnuplot_i version 1.11, the GPL code from Nicolas Devillard.
 License: GPL (>= 3)
 Depends: R (>= 2.7.0)
+Enhances: colorspace, png, rgdal, sp

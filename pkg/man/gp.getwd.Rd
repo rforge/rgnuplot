@@ -10,12 +10,11 @@
 \examples{
 #Initialize the gnuplot handle
 h1<-gp.init()
-
+\dontrun{
 #change gnuplot's working directory to be the same as R's working directory (default)
 gp.setwd(h1)
-
 gp.getwd(h1)
-
+}
 #close gnuplot handle
 h1<-gp.close(h1)
 }

@@ -11,7 +11,7 @@
 #Initialize the gnuplot handle
 h1<-gp.init()
 # get the version number
-gp.version(h1)
+\dontrun{gp.version(h1)}
 #close gnuplot handle
 h1<-gp.close(h1)
 }

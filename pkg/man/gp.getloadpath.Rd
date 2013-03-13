@@ -10,13 +10,12 @@
 \examples{
 #Initialize the gnuplot handle
 h1<-gp.init()
-
+\dontrun{
 #set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
 gp.setloadpath(h1)
-
 #get gnuplot's additional search directories
 gp.getloadpath(h1)
-
+}
 #close gnuplot handle
 h1<-gp.close(h1)
 }

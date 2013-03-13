@@ -10,13 +10,15 @@
 \examples{
 #Initialize the gnuplot handle
 h1<-gp.init()
+\dontrun{
 gp.WindowStatus(0)
 #plot sin(x)
-\dontrun{gp.plot.equation(h1,'sin(x)','')
+gp.plot.equation(h1,'sin(x)','')
 gp.WindowStatus(0)
 #pause R and gnuplot
-gp.pause()}
+gp.pause()
 gp.WindowStatus(0)
+}
 #close gnuplot handle
 h1<-gp.close(h1)
 }

@@ -10,8 +10,8 @@
 \examples{
 #Initialize the gnuplot handle
 h1<-gp.init()
-\dontrun{gp.cmd(h1,'plot 0/0')}
-gp.errmsg(h1)
+\dontrun{gp.cmd(h1,'plot 0/0')
+gp.errmsg(h1)}
 #close gnuplot handle
 h1<-gp.close(h1)
 }

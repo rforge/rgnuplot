@@ -7,6 +7,6 @@
 \seealso{	\code{\link{gp.init}}}
 \author{Jose' Gama}
 \examples{
-gp.X11.present()
+\dontrun{gp.X11.present()}
 }
 \keyword{programming}
