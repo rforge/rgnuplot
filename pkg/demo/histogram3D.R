@@ -12,9 +12,11 @@ gp.setwd(h1)
 #filename for a temporary path+file
 tmpfile<-tempfile()
 
+
+
 #load the histogram3D script, set the filenames and number of rows and columns
 gp.cmd(h1,'reset
-file = "marimekko.dat"
+file = "immigr5.dat"
 cylinder = "' %s% tmpfile %s% '"
 col = 4
 row = 5

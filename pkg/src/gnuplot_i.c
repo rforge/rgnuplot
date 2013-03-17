@@ -500,8 +500,8 @@ void gnuplot_plot_once(
   } else {
       gnuplot_plot_xy(handle, x, y, n, title);
   }
-  printf("press ENTER to continue\n");
-  while (getchar()!='\n') {}
+  //printf("press ENTER to continue\n");
+  //while (getchar()!='\n') {}
   gnuplot_close(handle);
   return ;
 }

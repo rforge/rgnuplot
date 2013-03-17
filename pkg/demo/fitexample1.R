@@ -22,6 +22,7 @@ nls.out <- nls.lm(par=parStart, fn = residFun, observed = simDNoisy, xx = x, con
 lines(x,getPred(as.list(coef(nls.out)), x), col=2, lwd=2)
 ## summary information on parameter estimates
 summary(nls.out)
+#Sys.sleep(5);dev.off()
 
 # fit using Rgnuplot
 require(Rgnuplot)
@@ -42,7 +43,7 @@ fit y(x) "' %s% tmpfile %s% '" u 1:2 via a,b,c
 set xlabel "x"
 set ylabel "y"
 set nokey
-set terminal postscript eps color;set output "fitexample1.eps"
+#set terminal postscript eps color;set output "fitexample1.eps"
 plot y(x), "' %s% tmpfile %s% '"')
 # show the fit progress from the log file, summary information
 cat(gp.file2string(logfile))

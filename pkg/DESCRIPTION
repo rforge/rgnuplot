@@ -1,9 +1,22 @@
 Package: Rgnuplot
+Type: Package
 Version: 1.0.0
 Title: Rgnuplot, R interface for gnuplot
-Author: Jose' Gama
+Authors@R: c(person(given = "Nicolas", family = "Devillard", role = "aut"),
+    person(given = "Mauricio", family = "Galo", role = "ctb"),
+    person(given = "Patrick", family = "J. Bartlein", role = "ctb"),
+    person(given = "Zoltan", family = "Voros", role = "ctb"),
+    person(given = "Aaron", family = "Titus", role = "ctb"),
+    person(given = "Andy", family = "Stein", role = "ctb"),
+    person(given = "Jieli", family = "Qin", role = "ctb"),
+    person(given = "Matthew", family = "T. Perry", role = "ctb"),
+    person(given = "Ben", family = "Ruijl", role = "ctb"),
+    person(given = "Toshihiko", family = "Kawano", role = "ctb"),
+    person(given = "John", family = "D. Cook", role = "ctb"),
+    person(given = "Oscar", family = "Perpinan Lamigueiro", role = "ctb"),
+    person(given = "Joel", family = "VanderWerf", role = "ctb"),
+    person(given = "Jose", family = "Gama", role = c("aut","cre"),email = "jgama@abo.fi"))  
 SystemRequirements: gnuplot
-Maintainer: Jose' Gama <jgama@abo.fi>
 Description: Rgnuplot, R interface for gnuplot
         Based on gnuplot_i version 1.11, the GPL code from Nicolas Devillard.
 License: GPL (>= 3)

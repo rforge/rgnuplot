@@ -11,6 +11,7 @@ gp.image2PNG('windrose.png','windrose2.png',alpha=TRUE)
 #now the background is white
 gp.image.plot('windrose2.png')
 
+if (!file.exists('blutux.png')) { file.copy(system.file('extdata/blutux.rgb', package='Rgnuplot'),getwd()); gp.RGB2image('blutux.rgb','blutux.png',128,128)}
 gp.image.rgbfiltercolor.sepia('blutux.png','blutuxsepia.png')
 gp.image.rgbgreyscaleBT709('blutux.png','blutuxgreyscaleBT709.png')
 gp.image.rgbfalsecolor('blutux.png','blutuxfalsecolor.png')

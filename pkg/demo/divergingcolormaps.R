@@ -1,5 +1,6 @@
 library(Rgnuplot)
 
+if (!file.exists('earth_day.jpg')) download.file('http://nssdc.gsfc.nasa.gov/planetary/image/earth_day.jpg','earth_day.jpg')
 # mask the oceans and large water bodies with black color
 gp.image.rgbchange('earth_day.jpg', 'earth_dayWATERmask.png', 'PNG', NULL,'(r>2 & r<32 & g>26 & g<52 & b<106 & b>50)?0:r',
 '(r>2 & r<32 & g>26 & g<52 & b<106 & b>50)?0:g','(r>2 & r<32 & g>26 & g<52 & b<106 & b>50)?0:b')
@@ -109,7 +110,7 @@ unset key
 unset xtics
 unset ytics
 set size ratio -1
-set cbrange [-4.3:8.1]
+set cbrange [-8:8]#[-4.3:8.1]
 set xrange[-179:179]
 set yrange[-89:89]
 set palette model RGB file "BuOrR_14.txt" every ::2 u 1:2:3
@@ -149,7 +150,7 @@ gp.matrixr2gnu(d,'anomaly.pal')
 #Winkel tripel projection
 gp.run('load "projections.gnu"
 set size ratio -1
-p=WinkeltripelInit(50)
+p=WinkeltripelInit(1)
 set title "Temperature anomalies December 2012\\n1981-2010 base period"
 set cbrange [-4.3:8.1]
 set xrange[-179:179]

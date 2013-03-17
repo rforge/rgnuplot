@@ -14,7 +14,7 @@ gp.cmd(h1,'splot "blutux.rgb" binary array=(128,128) flipy format="%uchar%uchar%
 #gp.cmd(h1, 'set terminal X11;set output')
 #convert an RGB file to PNG
 rgbfile <- system.file('extdata/blutux.rgb', package='Rgnuplot')
-gp.RGB2PNG(rgbfile,'blutux.png',128,128)
+gp.RGB2image(rgbfile,'blutux.png',128,128)
 #plot the recently converted PNG file
 gp.cmd(h1,'set size ratio -1;plot "blutux.png" binary filetype=png with rgbimage notitle')
 #plot a 2D RGB binary file in a 3D box

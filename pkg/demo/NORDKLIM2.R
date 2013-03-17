@@ -1,6 +1,8 @@
 library(Rgnuplot)
 library(rpanel)
 
+if (!(file.exists('NORDKLIM-Helsinki-prec-columns.dat'))) stop('Please run demo NORDKLIM1 first, to create the data file')
+
 lbls<-c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
 
 #Initialize the gnuplot handle

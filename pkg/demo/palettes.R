@@ -124,15 +124,13 @@ plot "blutuxRGBfullColorMatrix.dat" u 1:2:($3/65536):((int($3) & 65280)/256):(in
 gp.run('#set terminal pngcairo;set output "blutuxRGBfullColor3.png"
 set size square;set yrange [] reverse;plot "blutuxRGBfullColorMatrix.dat" matrix w image notit',TRUE)
 
-
-
-
 gpfile <- system.file('extdata/blutuxwithpalette.png', package='Rgnuplot')
 if (!file.exists('blutuxwithpalette.png')) file.copy(gpfile,getwd())
 PNGdata256<-gp.PNG2color('blutuxwithpalette.png')#get the color matrix from an indexed PNG file
 unique(c(PNGdata256)) #236
 paletteRGB<-gp.CreatePaletteFromMatrix(PNGdata256)#create a palette
-#paletteRGB<-paletteRGB[1:(unique(c(PNGdata256)))]
+paletteRGB<-c(paletteRGB,rep(0,19))
+if (file.exists('blutuxwithpalette.pal')) file.remove('blutuxwithpalette.pal')
 gp.RGB1to3channels(paletteRGB,fileRGB3channel='blutuxwithpalette.pal')#save the palette to a file with separated RGB components
 gp.palette.plot('blutuxwithpalette.png','GIMP')#show the palette from the PNG file
 PNGdataIndexed<-gp.CreateIndexFromMatrixAndPalette(PNGdata256, paletteRGB)#create an indexed color matrix
@@ -141,12 +139,12 @@ gp.matrixr2gnu(PNGdataIndexed,'blutuxwithpalette.dat')#save the indexed color ma
 max(PNGdataIndexed)
 gp.run('#set terminal pngcairo;set output "blutuxwithpalette1.png"
 set view map; set size square;set yrange [] reverse
-set cbrange [0:235]
+set cbrange [0:254]
 set palette model RGB file "blutuxwithpalette.pal" u ($1/255):($2/255):($3/255)
 splot "blutuxwithpalette.dat" matrix w image notit',TRUE)
 
 
-
+if (!file.exists('blutux.png')) gp.RGB2image(system.file('extdata/blutux.rgb', package='Rgnuplot'),'blutux.png',128,128)
 testmap<-'blutux'#tuxgnu file to be mapped
 #gp.image.resize(testmap %s% '0.png',testmap %s% '256.png',256,128)
 PNGdata<-gp.PNG2color(testmap %s% '.png')#get the color matrix
@@ -178,7 +176,7 @@ gp.run('#set terminal pngcairo;set output "blutuxwithpalette3.png"
 set view map;
 set size ratio -1;set lmargin 0;set rmargin 0;set tmargin 0;set bmargin 0;unset key;unset tics;unset border;set yrange [] reverse
 set palette model RGB file "blutuxwithpalette.pal" u ($1/255):($2/255):($3/255)
-set cbrange[0:235]
+set cbrange[0:254]
 set pm3d corners2color c1
 splot "blutuxwithpalette.dat" matrix with pm3d notitle',TRUE)
 
@@ -197,7 +195,7 @@ set hidden3d back
 set view equal xyz
 set view 86,86,1,1
 set palette model RGB file "blutuxwithpalette.pal" u ($1/255):($2/255):($3/255)
-set cbrange[0:235]
+set cbrange[0:254]
 set pm3d corners2color c1
 splot cos(u)*cos(v),cos(u)*sin(v),sin(u) w l lc rgb "grey" notit, "blutuxwithpalette.dat" matrix u (($1-64)/128*180):(-($2-64)/128*180):(1):3 w pm3d notit',TRUE)
 
@@ -217,7 +215,7 @@ set hidden3d back
 set view equal xyz
 set view 80,80,2,2
 set palette model RGB file "blutuxwithpalette.pal" u ($1/255):($2/255):($3/255)
-set cbrange[0:255]
+set cbrange[0:254]
 set pm3d corners2color c1
 splot cos(u)*cos(v),cos(u)*sin(v),sin(u) w l lc rgb "grey" notit, "blutuxwithpaletteXY.dat" u (($2-64)/128*180):(-($1-64)/128*180):(1):3 w pm3d notit',TRUE)
 

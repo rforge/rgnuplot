@@ -53,8 +53,9 @@ unset clabel
 set table "' %s% tmpfile1 %s% '"
 splot "volcano.txt" matrix w l lt -1
 unset table
-!awk "NF<2{printf\"\\n\"}{print}" <' %s% tmpfile1 %s% ' >' %s% tmpfile2 %s% '
-splot  "volcano.txt" matrix w pm3d nocontour,"' %s% tmpfile2 %s% '" w l lc rgb "black" nosurface', TRUE )
+reset
+!awk "NF<2{printf\\"\\n\\"}{print}" < ' %s% tmpfile1 %s% ' > ' %s% tmpfile2 %s% '
+splot "volcano.txt" matrix w pm3d nocontour notit,"' %s% tmpfile2 %s% '" w l lc rgb "black" nosurface notit', TRUE )
 
 #satellite image of Maunga Whau
 library(RgoogleMaps)
@@ -93,8 +94,8 @@ unset colorbox
 set hidden3d
 splot "Maungawhau2.dat" u 1:2:3:4 w pm3d notitle', TRUE )
 
-# create a palette for Maungawhau61x86.png
-testmap<-'Maungawhau61x86'
+# create a palette for Maungawhau61x87.png
+testmap<-'Maungawhau61x87'
 PNGdata<-gp.PNG2color(testmap %s% '.png') # get the color matrix from the PNG file
 paletteRGB<-gp.CreatePaletteFromMatrix(PNGdata) # create a palette
 gp.RGB1to3channels(paletteRGB,fileRGB3channel=testmap %s% '.pal') # save the palette to a file with separated RGB components
@@ -124,7 +125,9 @@ splot "' %s% testmap %s% 'XYndx.dat" u 1:2:3:4 w pm3d notitle', TRUE )
 m1<-GetMap(center=c(-36.875673,174.765036), zoom =16, destfile = "MaungawhauZOOM16.png",maptype = "satellite")
 
 # Read the geoTiff and save it to a data file with the coordinates only and without the coordinate reference system (CRS) arguments.
-f <- '/home/lop/Downloads/Maungaw/1-0001-0001.tif'
+f <- '1-0001-0001.tif'
+if (file.exists(f)) {
+require(rgdal)
 x<-readGDAL(f)
 x2<-raster(x)
 bbx = m1$BBOX
@@ -135,9 +138,9 @@ gp.splot(r2)
 str(r)#44 rows x 54 columns
 gp.matrixr2gnu(r2,'Maungaw.dat')
 gp.run('splot "Maungaw.dat" matrix w l',TRUE)
-
+}
 # Instead of downloading the geoTiff and running code , the file "Maungaw.dat" can be copied from the extdata directory of Rgnuplot.
-file.copy(system.file('extdata/Maungaw.dat', package='Rgnuplot'),getwd())
+if (!(file.exists(f))) file.copy(system.file('extdata/Maungaw.dat', package='Rgnuplot'),getwd())
 
 # resample to five times its original size. 
 gp.resampleDEM('Maungaw.dat','MaungawresXY.dat',c(0,44*5-1),c(0,54*5-1),interpolationMethod=(44*5) %s% ',' %s% (54*5) %s% ' gauss 1')

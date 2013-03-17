@@ -93,7 +93,7 @@ EstereoAzimutalXC(lat,lon)=2*ap*( cos(lat0)*sin(lat)-sin(lat0)*cos(lat)*cos(lon-
 EstereoAzimutalYC(lat,lon)=2*ap*cos(lat)*sin(lon-long0)/den(lat,lon)
 
 # Plate-Carrée Projection
-PlateCarreeInit(long0)=(long0=long0, ap=12,"Plate-Carrée Projection")
+PlateCarreeInit(long0)=(long0=long0, ap=.2,"Plate-Carrée Projection")
 PlateCarreeXC(lat,lon)=ap*lat
 PlateCarreeYC(lat,lon)=(lon-long0)*ap
 

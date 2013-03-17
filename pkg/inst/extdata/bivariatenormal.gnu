@@ -1,4 +1,5 @@
 #based on Kawano T "Introduction to Gnuplot " http://t16web.lanl.gov/Kawano/gnuplot/gallery/func2.html
+
 # Total errors
 sx = sqrt(sigx*sigx + sc*sc)
 sy = sqrt(sigy*sigy + sc*sc)

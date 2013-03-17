@@ -100,6 +100,7 @@ splot cos(u)*Cyldiameter,sin(u)*Cyldiameter,v w l lc rgb "grey" notit, "NewZeala
 #the shapefile is the NZGD2000 Meridional Circuits, from 
 #http://data.linz.govt.nz/layer/817-nz-meridional-circuit-boundaries-nzgd2000/
 og <- '/lds-nz-meridional-circuit-boundaries-nzgd2000-SHP'
+if (!file.exists(og)) print('Please download the file "lds-nz-meridional-circuit-boundaries-nzgd2000-SHP"') else {
 gp.SHP2gnu(og,'nz-meridional-circuit-bou','NZ.dat') # NZGD2000 to WGS84
 #plot the map of New Zealand with meridional circuit boundaries
 gp.run('#set terminal png;set output "worldNewZealandMeridionalCircuit.png"
@@ -110,6 +111,7 @@ set size ratio 1.8
 set xrange[' %s% NZbox[1,1] %s% ':' %s% NZbox[2,1] %s% ']#longitude
 set yrange[' %s% NZbox[1,2] %s% ':' %s% NZbox[2,2] %s% ']#latitude
 plot "NewZealand.dat" w l lc rgb "red", "NZ.dat" w l',TRUE)
+}
 
 # plot the map of the world - cartesian coordinate system by default, Equirectangular Projection
 # Cloudless Earth (Day)
@@ -117,8 +119,8 @@ plot "NewZealand.dat" w l lc rgb "red", "NZ.dat" w l',TRUE)
 # Cloudless Earth (Night)
 # http://nssdc.gsfc.nasa.gov/planetary/image/earth_night.jpg
 # download the Cloudless Earth (Day) image file from NASA
-download.file('http://nssdc.gsfc.nasa.gov/planetary/image/earth_day.jpg')
-gp.run('set terminal pngcairo;set output "gp_earth_day.png"
+if (!file.exists('earth_day.jpg')) download.file('http://nssdc.gsfc.nasa.gov/planetary/image/earth_day.jpg','earth_day.jpg')
+gp.run('#set terminal pngcairo;set output "gp_earth_day.png"
 unset key
 unset xtics
 unset ytics
@@ -238,7 +240,8 @@ set view 88,268,2,2 #Greenwich 180
 replot
 unset multiplot',TRUE)
 
-gp.XYcords2shpere(testmap %s% 'XYndx.dat',testmap %s% 'XYnewCOORDSndx.dat')
+
+gp.XYcoords2shpere(testmap %s% 'XYndx.dat',testmap %s% 'XYnewCOORDSndx.dat')
 gp.run('set angles degrees
 unset colorbox
 unset border
@@ -306,6 +309,7 @@ tissfiles<-dir(system.file(package='Rgnuplot')  %s% '/extdata',pattern='tissot')
 if (!all(file.exists(tissfiles))) file.copy(system.file(paste('extdata/', tissfiles,sep=''), package='Rgnuplot'),getwd())
 gp.SHP2gnu('.','tissot','tissot.dat')
 
+if (!file.exists('NOAA Coastline Data.dat')) stop('Please download WCL(World Coast Line) from http://www.ngdc.noaa.gov/mgg_coastline/ and save it as "NOAA Coastline Data.dat"')
 gp.run('!awk \'{gsub(/>/,"")}1\' "NOAA Coastline Data.dat" >NOAACoastline.dat',FALSE)
 gp.run('unset key;plot "NOAACoastline.dat" w l, "worldpar.dat" w l,"worldmer.dat" w l',TRUE)
 

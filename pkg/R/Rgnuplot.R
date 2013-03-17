@@ -471,7 +471,7 @@ if (!is.numeric(width)) stop('Argument <<width>> should be integer')
 if (!is.numeric(height)) stop('Argument <<height>> should be integer')
 if (!file.exists(RGBfile)) stop('Error! File ' %s% RGBfile %s% ' does not exist' )
 if (is.null(gpterminal)) gpterminal<-gp.ext2terminal(filetype)
-gp.run('set terminal ' %s% gpterminal %s% ' size ' %s% width %s% ',' %s% height %s% ';set output "' %s% imagefile %s% '"
+s<-'set terminal ' %s% gpterminal %s% ' size ' %s% width %s% ',' %s% height %s% ';set output "' %s% imagefile %s% '"
 set size ratio -1
 set lmargin 0
 set rmargin 0
@@ -480,7 +480,9 @@ set bmargin 0
 unset key
 unset tics
 unset border
-plot "' %s% RGBfile %s% '" binary array=' %s% width %s% 'x' %s% height %s% ' flipy format="%uchar" with rgbimage')
+plot "' %s% RGBfile %s% '" binary array=' %s% width %s% 'x' %s% height %s% ' flipy format="%uchar" with rgbimage'
+gp.run(s)
+#cat(s)
 }
 
 gp.RGB2DAT<-function(RGBfile, DATfile,width,height)
@@ -599,25 +601,29 @@ gp.RGB1to3channels<-function(RGB1channel=NULL, fileRGB1channel=NULL, fileRGB3cha
 #the input can be either a vector or matrix (RGB1channel) or a file (fileRGB1channel) 
 #the output can be either a vector (returned value) or a file (fileRGB3channel)
 outFile<-(is.null(fileRGB3channel))
-if (outFile) fileRGB3channel<-tempfile()#output vector
+if (!outFile) if (file.exists(fileRGB3channel)) file.remove(fileRGB3channel)
+#if (outFile) fileRGB3channel
+tmpOut<- tempfile()#output vector
 if (is.null(fileRGB1channel))#input vector or matrix (RGB1channel)
 {
 if (is.matrix(RGB1channel)) RGB1channel<-c(matrix(RGB1channel,dim(RGB1channel)[1],dim(RGB1channel)[2],byrow=FALSE))
-gp.run('set table "' %s% fileRGB3channel %s% '"
+s<-'set table "' %s% tmpOut %s% '"
 splot "-" u (int($1/65536)):((int($1) & 65280)/256):(int($1) & 255)
-' %s% paste(RGB1channel,'\n',sep='',collapse='') %s% '
+' %s% gsub('\n+$','',paste(RGB1channel,'\n',sep='',collapse='')) %s% '
 e
-unset table')
-r<-read.table(fileRGB3channel,skip=6,stringsAsFactors=FALSE, col.names=c('R','G','B','Z'))
+unset table'
+gp.run(s)
+r<-read.table(tmpOut,skip=6,stringsAsFactors=FALSE, col.names=c('R','G','B','Z'))
 r<-r[,-4]
 if (outFile) return(r) #output vector
-if (!outFile) write.table(r,file=fileRGB3channel, col.names=FALSE,row.names=FALSE)#output file
+r<-as.matrix(r,ncol=3)
+if (!outFile ) gp.matrixr2gnu(r,fileRGB3channel) #write.table(r,file=fileRGB3channel, col.names=FALSE,row.names=FALSE)#output file
 } else {#input file (fileRGB1channel)
-if (is.matrix(RGB1channel)) RGB1channel<-c(matrix(RGB1channel,dim(RGB1channel)[1],dim(RGB1channel)[2],byrow=FALSE))
-gp.run('set table "' %s% fileRGB3channel %s% '"
+#if (is.matrix(RGB1channel)) RGB1channel<-c(matrix(RGB1channel,dim(RGB1channel)[1],dim(RGB1channel)[2],byrow=FALSE))
+gp.run('set table "' %s% tmpOut %s% '"
 splot "' %s% fileRGB1channel %s% '" u (int($1/65536)):((int($1) & 65280)/256):(int($1) & 255)
 unset table')
-r<-read.table(fileRGB3channel,skip=6,stringsAsFactors=FALSE, col.names=c('R','G','B','Z'))
+r<-read.table(tmpOut,skip=6,stringsAsFactors=FALSE, col.names=c('R','G','B','Z'))
 r<-r[,-4]
 if (outFile) return(r) #output vector
 if (!outFile) write.table(r,file=fileRGB3channel, col.names=FALSE,row.names=FALSE)#output file
@@ -663,7 +669,6 @@ gp.palette.plot<-function(filepal, sortType='', TheGimp=FALSE)
 {#plots a palette from an indexed PNG file
 PNGdata2<-gp.PNG2color(filepal)#get the color matrix from an indexed PNG file
 paletteRGB<-gp.CreatePaletteFromMatrix(PNGdata2, sortType)#create a palette
-gp.RGB1to3channels(paletteRGB,fileRGB3channel='blutuxwithpalette.pal')
 tmppal<-tempfile()
 gp.RGB1to3channels(paletteRGB,fileRGB3channel=tmppal)#save the palette to a file with separated RGB components
 if (!TheGimp) r<-read.table(tmppal, stringsAsFactors=FALSE) else {
@@ -1637,6 +1642,7 @@ gp.cmd <- function(handle,cmd, ...)
 {
 gp.CheckHandle(handle)
 if (!is.character(cmd)) stop('Argument <<cmd>> should be a string')
+
 c<-list(...)
 if(length(c)) ret <- .C("Rgnuplot_cmd",handle,as.character(cmd),...,DUP = TRUE,PACKAGE="Rgnuplot" ) else 
 ret <- .C("Rgnuplot_send",handle,as.character(cmd),DUP = TRUE,PACKAGE="Rgnuplot" )

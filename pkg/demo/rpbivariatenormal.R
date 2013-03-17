@@ -15,8 +15,8 @@ gp.setwd(h1)
 gpfile <- system.file('extdata/bivariatenormal.gnu', package='Rgnuplot')
 s2 <- gp.file2string(gpfile)
 
-gp.cmd(h1,'flag=1\nmx=0.0\nsigx=0.77\nmy=0.61\nsigy=1.725\nsc=0.5\n' %s% s2)
-gp.cmd(h2,'flag=0\nmx=0.0\nsigx=0.77\nmy=0.61\nsigy=1.725\nsc=0.5\n' %s% s2)
+gp.cmd(h1,'flag=1\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
+gp.cmd(h2,'flag=0\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
 
 mx <- 0.0
 sigx <- 0.77
@@ -28,10 +28,10 @@ plot.binomial <- function(panel) {
    with(panel, {
 
 s1 <- 'mx = ' %s% mx %s% '
-sigx <- sqrt(' %s% sigx %s% ')
-my <- sqrt(' %s% my %s% '
-sigy <- ' %s% sigy %s% ')
-sc <- ' %s% sc
+sigx = ' %s% sigx %s% '
+my = ' %s% my %s% '
+sigy = ' %s% sigy %s% '
+sc = ' %s% sc
 
 gp.resetplot(h1)
 gp.cmd(h1,'flag = 1\n' %s% s1 %s% '\n' %s% s2)
@@ -51,11 +51,11 @@ sigy = 1.725,
 sc = 0.5, dev.number = dev.cur())
    rp.slider(pname, mx, -5, 5, initval = 0.0, title = "ux:", 
                    action = plot.binomial)
-   rp.slider(pname, sigx, 0, 5, initval = 0.77, title = "var(x):", 
+   rp.slider(pname, sigx, 0, (5), initval = (0.77), title = "var(x):", 
                    action = plot.binomial)               
    rp.slider(pname, my, -5, 5, initval = 0.61, title = "uy:", 
                    action = plot.binomial)
-   rp.slider(pname, sigy, 0, 5, initval = 1.725, title = "var(y):", 
+   rp.slider(pname, sigy, 0, (5), initval = (1.725), title = "var(y):", 
                    action = plot.binomial)               
    rp.slider(pname, sc, -1, 1, initval = .5, title = "p:", 
                    action = plot.binomial)    
