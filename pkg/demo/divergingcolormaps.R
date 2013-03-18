@@ -37,6 +37,29 @@ set palette defined ( -4.3 "#7f00ff", -4 "#7f00ff", -4 "#4094ff", -2 "#4094ff", 
 set format "%g"
 plot "' %s% anomalyData %s% '" every ::2 u (int($3)):(int($4)):(($5>8 & $5<9999)?8:$5) w image, "worldRmap.dat" u 1:2 w l lc rgb "black" notit',TRUE) #skip the first 2 lines, trim to max 8
 
+# modifying an existing palette
+if (!file.exists('GrMg_16.txt')) download.file('http://geography.uoregon.edu/datagraphics/color/GrMg_16.txt','GrMg_16.txt')
+pl1<-read.table('GrMg_16.txt',header = F,skip=2,stringsAsFactors=FALSE, strip.white=TRUE)
+pl1<-pl1[,1:3]
+pl2<-c(t(data.matrix(pl1)))
+#saving the palette with solid colors
+str(pl2)
+gp.matrix2palette(pl2, 'GrMg_16.pal',paletteIndec=-7:8,SolidColor=TRUE)
+gp.run('#set term pngcairo;set output "GHCN1b.png"
+unset key
+unset xtics
+unset ytics
+set size ratio -1
+set xrange[-179:179]
+set yrange[-89:89]
+set cbrange [-8:8]
+set palette model RGB file "GrMg_16.pal" u 4:1:2:3
+set format "%g"
+plot "' %s% anomalyData %s% '" every ::2 u (int($3)):(int($4)):(($5>8)?8:$5) w image notit,\\
+"worldRmap.dat" u 1:2 w l lc rgb "black" notit,\\
+"' %s% anomalyData %s% '" every ::2 u (int($3)):(int($4)):(0):(0):(0):(($5<999)?0:500) w rgba notit',TRUE)
+
+
 # the data must be changed so that splot can use it
 z<-read.table(anomalyData, header = F,skip=2, strip.white=TRUE,blank.lines.skip=TRUE)
 z<-z[,c(4,3,5)] # remove the first two columns
