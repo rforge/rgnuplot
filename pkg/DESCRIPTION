@@ -1,8 +1,8 @@
-Encoding: UTF-8
 Package: Rgnuplot
 Type: Package
-Version: 1.0.0
 Title: Rgnuplot, R interface for gnuplot
+Version: 1.0.0
+Encoding: UTF-8
 Authors@R: c(person(given = "Göran", family = "Högnäs", role = "ths"),
     person(given = "Nicolas", family = "Devillard", role = "aut"),
     person(given = "Mauricio", family = "Galo", role = "ctb"),
