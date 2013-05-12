@@ -1,6 +1,6 @@
 Package: Rgnuplot
 Type: Package
-Title: Rgnuplot, R interface for gnuplot
+Title: R interface for gnuplot
 Version: 1.0.0
 Encoding: UTF-8
 Authors@R: c(person(given = "Göran", family = "Högnäs", role = "ths"),

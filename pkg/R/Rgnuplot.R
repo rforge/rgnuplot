@@ -4,6 +4,8 @@ pauseterm.present <- NA
 
 "%s%" <- function(x,y) paste(x,y,sep='', collapse='') # string concatenation operator
 
+
+
 gp.plot.map<-function(mapvectfiles=NA, projection='PlateCarree', linetype='l', linestyle=1, plotTitle=NA, maprastfile=NA, maprastpalette=NA, AdditionalCode=NA,projectionInit=NA,returnCode=FALSE)
 {
 validProjections<-c('Winkeltripel','Robinson','Aitoff','NaturalEarth','WernersEquivalent','HammerWagner','EckertI','AlbersConical','SansonFlamsteed',
@@ -1415,7 +1417,7 @@ gp.setwd<-function(handle,wd=getwd())
 {#set gnuplot working directory, default path = R's working directory
 gp.CheckHandle(handle)
 options(warn=-1)
-print(wd)
+#print(wd)
 gp.cmd(handle, 'cd \"' %s% wd %s% '\"')
 }
 
