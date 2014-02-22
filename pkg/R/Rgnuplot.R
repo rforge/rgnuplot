@@ -751,7 +751,7 @@ for (m in 1:length(z1))
 if (isLines) z2<-z[[n]]@Lines[[m]]@coords else z2<-z[[n]]@Polygons[[m]]@coords
 if (toCRS==fromCRS) write(t(z2),gnufilename,ncolumns = 2,append=TRUE) else {
 b_sp <- sp::SpatialPoints(z2, proj4string=sp::CRS(fromCRS))
-z3<-rgdal::spTransform(b_sp, sp::CRS(toCRS))
+z3<-sp::spTransform(b_sp, sp::CRS(toCRS)) # rgdal::spTransform
 write(t(z3@coords),gnufilename,ncolumns = 2,append=TRUE)
 }
 cat(file=gnufilename,'\n',append=TRUE)
