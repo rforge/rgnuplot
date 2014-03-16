@@ -133,7 +133,7 @@ x2<-raster(x)
 bbx = m1$BBOX
 r <- crop(x2, extent(bbx$ll[,2],bbx$ur[,2],bbx$ll[,1],bbx$ur[,1]) )
 r2<-matrix(r@data@values, dim(r)[1], dim(r)[2],byrow=TRUE)
-r2<-apply(r2,2,rev)  #flip the matrix
+#r2<-apply(r2,2,rev)  #flip the matrix
 gp.splot(r2)
 str(r)#44 rows x 54 columns
 gp.matrixr2gnu(r2,'Maungaw.dat')
