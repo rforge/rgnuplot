@@ -8,6 +8,7 @@
 checkG <- try(system('gnuplot -V', intern = TRUE, ignore.stderr = T),silent=TRUE)
 checkG <- unlist(strsplit(checkG,' '))
 notInstG <- TRUE
+V <- ''
  if (length(checkG)>=2) if (checkG[1] == 'gnuplot') {
   V <- as.numeric(checkG[2])
   if (is.numeric(V)) if (V >= 4.6) notInstG <- FALSE
