@@ -43,7 +43,7 @@ AC_MSG_NOTICE([Checking for gnuplot])
 
 AC_CHECK_PROG(GNUPLOT,gnuplot,true,false)
 if test $GNUPLOT = "false"; then
-  AC_MSG_ERROR([*** gnuplot not found, it should be installed in order for Rgnuplot to work])
+  AC_MSG_ERROR([*** gnuplot not found, please read the vignette to learn how to install it])
 fi
 
 AC_ARG_VAR([PKG_CPPFLAGS],[custom C preprocessor flags for packages compilation])

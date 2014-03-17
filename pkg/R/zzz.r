@@ -23,7 +23,7 @@ mySystem <- .Platform$OS.type # unix windows
 if (mySystem == 'unix') if (Sys.info()['sysname']=='Darwin') mySystem <- 'mac'
 if (mySystem == 'unix')
 {
-packageStartupMessage('Installing gnuplot on Linux/Unix:
+packageStartupMessage('Installing gnuplot on Linux:
 
 On Debian Linux derivatives:
 sudo apt-get install gnuplot
