@@ -5,7 +5,7 @@
 
 .onAttach <- function(lib, pkg)
 {
-checkG <- try(system('gnuplot -V', intern = TRUE, ignore.stderr = T))
+checkG <- try(system('gnuplot -V', intern = TRUE, ignore.stderr = T),silent=TRUE)
 checkG <- unlist(strsplit(checkG,' '))
 notInstG <- TRUE
  if (length(checkG)>=2) if (checkG[1] == 'gnuplot') {
