@@ -6,11 +6,11 @@ if (!(file.exists('NORDKLIM-Helsinki-prec-columns.dat'))) stop('Please run demo 
 lbls<-c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
 
 #Initialize the gnuplot handle
-h1<-gp.init()
-#gp.cmd(h1,'unset key; set grid xtics; set grid ytics; set ztics scale 5; set xmtics; 
+h1<-GpInit()
+#GpCmd(h1,'unset key; set grid xtics; set grid ytics; set ztics scale 5; set xmtics; 
 #set pm3d ; set xrange[1:12]\nsplot \"NORDKLIM304-601FIN3.dat\" using 1:2:3  w l  linewidth 2 linecolor 3' )
 
-gp.cmd(h1,'unset key; set grid xtics; set grid ytics; set ztics scale 10;set pm3d ;set xrange[1:12];
+GpCmd(h1,'unset key; set grid xtics; set grid ytics; set ztics scale 10;set pm3d ;set xrange[1:12];
 set zrange [0:2000]
 set ticslevel 0 #place z-axis at the xy level
 set size ratio 1,.1
@@ -42,8 +42,8 @@ notsure<<-'unset key; set grid xtics; set grid ytics; set ztics scale 5;set pm3d
 set xtics (' %s% sxtics %s% ')
 splot \"NORDKLIM-Helsinki-prec-columns.dat\" using (' %s% sSelect %s% '):2:3 w l  linewidth 2 linecolor 3'
          
-gp.resetplot(h1)
-gp.cmd(h1,'unset key; set grid xtics; set grid ytics; set ztics scale 10;set pm3d ;set xrange[1:' %s% scounter %s% '];
+GpResetplot(h1)
+GpCmd(h1,'unset key; set grid xtics; set grid ytics; set ztics scale 10;set pm3d ;set xrange[1:' %s% scounter %s% '];
 set zrange [0:2000]
 set ticslevel 0 #place z-axis at the xy level
 set size ratio 1,.1
@@ -65,6 +65,6 @@ splot \"NORDKLIM-Helsinki-prec-columns.dat\" using (' %s% sSelect %s% '):2:3 w l
    rp.do(panel, plot.hist)#
    }
 
-#gp.pause()
+#GpPause()
 #close gnuplot handles
-#h1<-gp.close(h1)    
+#h1<-Gpclose(h1)    

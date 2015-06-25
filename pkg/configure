@@ -3237,7 +3237,7 @@ fi
 
 
 if test $GNUPLOT = "false"; then
-  as_fn_error $? "*** gnuplot not found, it should be installed in order for Rgnuplot to work" "$LINENO" 5
+  as_fn_error $? "*** gnuplot not found, please read the vignette to learn how to install it" "$LINENO" 5
 fi
 
 

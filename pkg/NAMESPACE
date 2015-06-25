@@ -1,4 +1,4 @@
 useDynLib(Rgnuplot, .registration = TRUE, .fixes = "C_")
-exportPattern("^gp.","%s%")
+exportPattern("^Gp","%s%")
 #import(colorspace, png, rgdal)
 

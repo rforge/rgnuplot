@@ -1,6 +1,6 @@
 require(Rgnuplot)
-# "Hello World!" - using gp.plot.equation
-h1 <- gp.init()#Initialize the gnuplot handle
-gp.plot.equation( h1, 'sin( x )', 'Hello World!' )
-gp.pause() # pause R and gnuplot
-h1<-gp.close(h1) # close gnuplot handles
+# 'Hello World!' - using GpPlotEquation
+h1 <- GpInit()  #Initialize the gnuplot handle
+GpPlotEquation(h1, "sin( x )", "Hello World!")
+GpPause()  # pause R and gnuplot
+h1 <- Gpclose(h1)  # close gnuplot handles 

@@ -3,20 +3,20 @@ library(rpanel)
 #plots a univariate normal distribution
 
 #Initialize the gnuplot handles
-h1 <- gp.init()
-h2 <- gp.init()
+h1 <- GpInit()
+h2 <- GpInit()
 
 #set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
-gp.setloadpath(h1)
+GpSetloadpath(h1)
 
 #change gnuplot's working directory to be the same as R's working directory (default)
-gp.setwd(h1)
+GpSetwd(h1)
 #read gnuplot script
 gpfile <- system.file('extdata/bivariatenormal.gnu', package='Rgnuplot')
-s2 <- gp.file2string(gpfile)
+s2 <- GpFile2string(gpfile)
 
-gp.cmd(h1,'flag=1\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
-gp.cmd(h2,'flag=0\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
+GpCmd(h1,'flag=1\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
+GpCmd(h2,'flag=0\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
 
 mx <- 0.0
 sigx <- 0.77
@@ -33,10 +33,10 @@ my = ' %s% my %s% '
 sigy = ' %s% sigy %s% '
 sc = ' %s% sc
 
-gp.resetplot(h1)
-gp.cmd(h1,'flag = 1\n' %s% s1 %s% '\n' %s% s2)
-gp.resetplot(h2)
-gp.cmd(h2,'flag = 0\n' %s% s1 %s% '\n' %s% s2)
+GpResetplot(h1)
+GpCmd(h1,'flag = 1\n' %s% s1 %s% '\n' %s% s2)
+GpResetplot(h2)
+GpCmd(h2,'flag = 0\n' %s% s1 %s% '\n' %s% s2)
    
       })
    panel
@@ -59,10 +59,10 @@ sc = 0.5, dev.number = dev.cur())
                    action = plot.binomial)               
    rp.slider(pname, sc, -1, 1, initval = .5, title = "p:", 
                    action = plot.binomial)    
-rp.button(pname, { h1<-gp.close(h1);h2<-gp.close(h2);break } , title = 'Close', quitbutton=TRUE)
+rp.button(pname, { h1<-Gpclose(h1);h2<-Gpclose(h2);break } , title = 'Close', quitbutton=TRUE)
    }
 
 rp.binomial()
 
 #close gnuplot handles
-#h1<-gp.close(h1);h2<-gp.close(h2)   
+#h1<-Gpclose(h1);h2<-Gpclose(h2)   
