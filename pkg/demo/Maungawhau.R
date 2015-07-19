@@ -1,4 +1,3 @@
-library(Rgnuplot)
 
 # if it doesn't exist, create a file with the volcano data
 if (!file.exists("volcano.txt")) write.table(volcano, file = "volcano.txt", quote = FALSE, row.names = FALSE, col.names = FALSE)

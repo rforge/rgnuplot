@@ -1,4 +1,3 @@
-library(Rgnuplot)
 
 # create a matrix for the tests - values 0, 1 and 2 in 3x3 blocks of 10x5 numbers 012 120 201 RGB GBR BRG
 ColorMatrix <- rbind(matrix(rep(0:2, each = 10, times = 5), ncol = 30, byrow = TRUE), matrix(rep(c(1, 2, 0), each = 10, times = 5), ncol = 30, byrow = TRUE), matrix(rep(c(2, 0, 1), 

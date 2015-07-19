@@ -1,4 +1,3 @@
-library(Rgnuplot)
 
 # generate the random walk data, 1000 observations of X, Y data for 3 experiments X1, Y1, X2, Y2, X3, Y3 use a seed for reproducibility
 set.seed(0)
@@ -16,7 +15,7 @@ write.table((matRandXY), file = "randwalk3x1000XY.dat", sep = "\t", row.names = 
 write.table((matRandXYcs), file = "randwalk3x1000XYcumsum.dat", sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
 # Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
 GpSetloadpath(h1)
 

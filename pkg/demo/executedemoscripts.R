@@ -1,6 +1,6 @@
-library(Rgnuplot)
+
 # example of using GpLoadDemo and GpReadURL2string Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # change gnuplot's working directory to be the same as R's working directory (default)
 GpSetwd(h1)
 # load the file 'simple.dem' GpCmd(h1, 'set terminal postscript eps color;set output 'simple.eps'\n' %s% GpURL2string('http://gnuplot.sourceforge.net/demo_svg/simple.1.gnu') %s%

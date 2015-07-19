@@ -1,4 +1,4 @@
-library(Rgnuplot)
+
 GpRun("k=0\nbind Home \"k=k+1; replot\"\nplot sin(x+k)", TRUE)
 
 GpRun("bind \"p\" \"set terminal png;set output '00000.png';replot;set terminal wxt\"\nplot sin(x)", TRUE)

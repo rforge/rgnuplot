@@ -1,6 +1,3 @@
-library(Rgnuplot)
-library(maps)
-library(maptools)
 
 # saving a map from package 'maps' with Mercator projection
 map("world", projection = "mercator")

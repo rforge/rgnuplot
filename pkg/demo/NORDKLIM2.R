@@ -1,12 +1,10 @@
-library(Rgnuplot)
-library(rpanel)
 
 if (!(file.exists('NORDKLIM-Helsinki-prec-columns.dat'))) stop('Please run demo NORDKLIM1 first, to create the data file')
 
 lbls<-c('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')
 
 #Initialize the gnuplot handle
-h1<-GpInit()
+h1<-Gpinit()
 #GpCmd(h1,'unset key; set grid xtics; set grid ytics; set ztics scale 5; set xmtics; 
 #set pm3d ; set xrange[1:12]\nsplot \"NORDKLIM304-601FIN3.dat\" using 1:2:3  w l  linewidth 2 linecolor 3' )
 

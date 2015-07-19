@@ -1,7 +1,6 @@
-library(Rgnuplot)
 
 # Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # use a seed for reproducibility
 set.seed(0)
 nxpoints <- 10  #number of x points to plot

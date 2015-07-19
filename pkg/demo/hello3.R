@@ -1,7 +1,7 @@
-require(Rgnuplot)
+
 #'Hello World!' - loading and executing a gnuplot script from Rgnuplot
 # Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 
 # set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
 GpSetloadpath(h1)

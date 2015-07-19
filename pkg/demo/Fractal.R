@@ -1,6 +1,6 @@
-library(Rgnuplot)
+
 # Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
 GpSetloadpath(h1)
 # change gnuplot's working directory to be the same as R's working directory (default)

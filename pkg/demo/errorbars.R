@@ -1,4 +1,4 @@
-require(Rgnuplot)
+
 # based on the example from library gplots
 data(state)
 tmp <- split(state.area, state.region)
@@ -8,7 +8,7 @@ n <- sapply(tmp, length)
 ciw <- qt(0.975, n) * stdev/sqrt(n)
 
 # Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
 GpSetloadpath(h1)
 

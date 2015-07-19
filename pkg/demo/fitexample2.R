@@ -51,7 +51,7 @@ logstderr <- "minpackfit-2.log"
 if (file.exists(logstderr)) file.remove(logstderr)
 write(t(cbind(TT, N)), tmpfile, ncolumns = 2)
 # Initialize the gnuplot handle
-h1 <- GpInit.save.stderr(logstderr)
+h1 <- Gpinit.save.stderr(logstderr)
 # change gnuplot's working directory to be the same as R's working directory (default)
 GpSetwd(h1)
 GpCmd(h1, "tau = 2.2\nN0 = 1500\na = 0.25\nf0 = 10\nf(TT) = N0*exp(-TT/tau)*(1 + a*cos(f0*TT))\nset fit logfile \"" %s% logfile %s% "\"\nset dummy TT\nfit f(TT) \"" %s% tmpfile %s% 

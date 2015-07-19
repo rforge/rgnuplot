@@ -1,4 +1,3 @@
-library(Rgnuplot)
 
 # download an image of a windrose from Wikipedia
 download.file("http://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Brosen_windrose.svg/500px-Brosen_windrose.svg.png", "windrose.png")

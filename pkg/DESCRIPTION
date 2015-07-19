@@ -3,14 +3,14 @@ Type: Package
 Title: R interface for gnuplot
 Version: 1.0.3
 Encoding: UTF-8
-Authors@R: c(person(given = "José", family = "Gama", role = c("aut","cre"),email = "jgama@abo.fi"),
+Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre"),email = "rxprtgama@gmail.com"),
     person(given = "Nicolas", family = "Devillard", role = "aut"),
     person(given = "Mauricio", family = "Galo", role = "ctb"),
     person(given = "Patrick", family = "J. Bartlein", role = "ctb"),
     person(given = "Oscar", family = "Perpiñán Lamigueiro", role = "ctb")
     )  
 SystemRequirements: gnuplot
-Description: Rgnuplot, R interface for gnuplot
+Description: Rgnuplot, interface for gnuplot
         Based on gnuplot_i version 1.11, the GPL code from Nicolas Devillard.
 License: GPL (>= 3)
 Depends: R (>= 2.7.0)

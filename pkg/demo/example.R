@@ -1,4 +1,4 @@
-library(Rgnuplot)
+
 # example of plotting slopes, equations, styles, lists of points and multiple output windows gnuplot_i, by Nicolas Devillard Initialize variables
 NPOINTS <- 50
 SLEEP_LGTH <- 2
@@ -6,8 +6,8 @@ x <- vector("numeric", NPOINTS)
 y <- vector("numeric", NPOINTS)
 # Initialize the gnuplot handle
 print("*** example of gnuplot control through C ***\n")
-h1 <- GpInit()
-h2 <- GpInit()
+h1 <- Gpinit()
+h2 <- Gpinit()
 
 # Slopes
 
@@ -92,11 +92,11 @@ print("\n\n")
 print("*** multiple output windows\n")
 GpResetplot(h1)
 GpSetstyle(h1, "lines")
-h2 = GpInit()
+h2 = Gpinit()
 GpSetstyle(h2, "lines")
-h3 = GpInit()
+h3 = Gpinit()
 GpSetstyle(h3, "lines")
-h4 = GpInit()
+h4 = Gpinit()
 GpSetstyle(h4, "lines")
 
 print("window 1: sin(x)\n")

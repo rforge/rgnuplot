@@ -1,6 +1,6 @@
-library(Rgnuplot)
+
 # sine animation example Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 print("*** example of gnuplot control through C ***\n")
 # loop from 0.1 to 1.0
 for (phase in (1:100)/10) {

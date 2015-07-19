@@ -1,7 +1,6 @@
-require(Rgnuplot)
 
 # Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # use a seed for reproducibility
 set.seed(0)
 # change gnuplot's working directory to be the same as R's working directory (default)

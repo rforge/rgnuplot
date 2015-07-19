@@ -1,6 +1,3 @@
-library(Rgnuplot)
-library(maps)
-library(mapdata)
 
 if (!file.exists("worldRmap.dat")) {
     # convert the map of the world from the R package maps into a format readable by gnuplot

@@ -1,6 +1,6 @@
-require(Rgnuplot)
+
 # saving a plot to a PNG file (from gnuplot_i examples) Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # change gnuplot's working directory to be the same as R's working directory (default)
 GpSetwd(h1)
 GpCmd(h1, "set terminal png")

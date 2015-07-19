@@ -1,4 +1,3 @@
-library(Rgnuplot)
 
 if (!file.exists("earth_day.jpg")) download.file("http://nssdc.gsfc.nasa.gov/planetary/image/earth_day.jpg", "earth_day.jpg")
 # mask the oceans and large water bodies with black color

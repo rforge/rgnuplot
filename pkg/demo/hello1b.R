@@ -1,7 +1,7 @@
-require(Rgnuplot)
+
 #'Hello World!' - text on caption
 # Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # naming the axis
 GpSetXlabel(h1, "x")
 GpSetYlabel(h1, "y")

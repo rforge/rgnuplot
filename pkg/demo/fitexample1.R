@@ -30,7 +30,7 @@ tmpfile <- tempfile()
 logfile <- tempfile()
 write(t(cbind(x, simDNoisy)), tmpfile, ncolumns = 2)
 # Initialize the gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # change gnuplot's working directory to be the same as R's working directory (default)
 GpSetwd(h1)
 GpCmd(h1, "a=9\nb=-1\nc=6\ny(x)=a * exp(b * x) + c\nset fit logfile \"" %s% logfile %s% "\"\nfit y(x) \"" %s% tmpfile %s% "\" u 1:2 via a,b,c\nset xlabel \"x\"\nset ylabel \"y\"\nset nokey\n#set terminal postscript eps color;set output \"fitexample1.eps\"\nplot y(x), \"" %s% 

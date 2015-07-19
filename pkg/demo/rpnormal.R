@@ -1,9 +1,7 @@
-library(Rgnuplot)
-library(rpanel)
 
 # plots a univariate normal distribution Initialize the gnuplot handles
-h1 <- GpInit()
-h2 <- GpInit()
+h1 <- Gpinit()
+h2 <- Gpinit()
 # set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
 GpSetloadpath(h1)
 

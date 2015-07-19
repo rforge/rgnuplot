@@ -1,4 +1,3 @@
-library(Rgnuplot)
 
 # first make sure that all the data files exist
 if ((!file.exists("NOAACoastline.dat")) | (!file.exists("worldmer.dat")) | (!file.exists("worldpar.dat")) | (!file.exists("tissot.dat")) | (!file.exists("earth_dayXYcoords.dat")) | 

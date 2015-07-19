@@ -1,4 +1,4 @@
-library(Rgnuplot)
+
 # polynomial curve fitting Using Gnuplot to sketch graphs Aaron Titus, 2012 http://linus.highpoint.edu/~atitus/gnuplot/
 polnorder <- 7  # order of the polynomial
 npoints <- 20  # number of points to plot
@@ -14,7 +14,7 @@ initvalues <- c(1, 1, 1, 1, 1, 1, 1, 1)
 # write the initial values of the parameters to a text file
 write(t(cbind(letters[1:(polnorder + 1)], "=", initvalues)), "guess.txt", ncolumns = 3, sep = "")
 # create gnuplot handle
-h1 <- GpInit()
+h1 <- Gpinit()
 # change gnuplot's working directory to be the same as R's working directory (default)
 GpSetwd(h1)
 GpCmd(h1, "#set terminal postscript eps color;set output \"polynomialfit.eps\"\ny(x)=a+b*x+c*x**2+d*x**3+e*x**4+f*x**5+g*x**6+h*x**7\nfit y(x) \"data.txt\" via \"guess.txt\"\nset xlabel \"x\"\nset ylabel \"y\"\nunset key\nplot y(x), \"data.txt\"")

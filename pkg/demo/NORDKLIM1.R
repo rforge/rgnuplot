@@ -1,5 +1,3 @@
-require(Rgnuplot)
-require(nordklimdata1)
 
 data(NordklimData)
 # nordklim <- read.table(system.file('extdata/NordklimData.tab', package = 'Rgnuplot'), stringsAsFactors=FALSE, header=TRUE)
