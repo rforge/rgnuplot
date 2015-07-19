@@ -1,4 +1,4 @@
-require(minpack.lm)
+#minpack.lm
 ###### example 2 from minpack.lm
 
 set.seed(0)  #use a seed for reproducibility
@@ -30,7 +30,7 @@ fcn.jac <- function(p, TT, N, fcall, jcall) -do.call("jcall", c(list(TT = TT), a
 ## starting values
 guess <- c(tau = 2.2, N0 = 1500, a = 0.25, f0 = 10)
 ## to use an analytical expression for the gradient found in fcn.jac uncomment jac = fcn.jac
-out <- nls.lm(par = guess, fn = fcn, jac = fcn.jac, fcall = f, jcall = j, TT = TT, N = N, control = nls.lm.control(nprint = 1))
+out <- minpack.lm::nls.lm(par = guess, fn = fcn, jac = fcn.jac, fcall = f, jcall = j, TT = TT, N = N, control = minpack.lm::nls.lm.control(nprint = 1))
 ## get the fitted values
 N1 <- do.call("f", c(list(TT = TT), out$par))
 ## add a blue line representing the fitting values to the plot of data
@@ -51,10 +51,10 @@ logstderr <- "minpackfit-2.log"
 if (file.exists(logstderr)) file.remove(logstderr)
 write(t(cbind(TT, N)), tmpfile, ncolumns = 2)
 # Initialize the gnuplot handle
-h1 <- Gpinit.save.stderr(logstderr)
+h1 <- GpinitSaveStderr(logstderr)
 # change gnuplot's working directory to be the same as R's working directory (default)
-GpSetwd(h1)
-GpCmd(h1, "tau = 2.2\nN0 = 1500\na = 0.25\nf0 = 10\nf(TT) = N0*exp(-TT/tau)*(1 + a*cos(f0*TT))\nset fit logfile \"" %s% logfile %s% "\"\nset dummy TT\nfit f(TT) \"" %s% tmpfile %s% 
+Gpsetwd(h1)
+Gpcmd(h1, "tau = 2.2\nN0 = 1500\na = 0.25\nf0 = 10\nf(TT) = N0*exp(-TT/tau)*(1 + a*cos(f0*TT))\nset fit logfile \"" %s% logfile %s% "\"\nset dummy TT\nfit f(TT) \"" %s% tmpfile %s% 
     "\" via tau, N0, a, f0")
 # wait until the size of the log file is stable
 logsize <- -1
@@ -62,20 +62,20 @@ while (file.info(logstderr)$size != logsize) {
     Sys.sleep(2)
     logsize <- file.info(logstderr)$size
 }
-GpFitAllprogress(logstderr)  #shows the progress of the fit algorithm
-WSSR <- GpFitProgress(logstderr, "WSSR")  #get all WSSR values
+GpfitAllprogress(logstderr)  #shows the progress of the fit algorithm
+WSSR <- GpfitProgress(logstderr, "WSSR")  #get all WSSR values
 WSSR <- WSSR[-1]  #remove the WSSR from iteration 0
 GpMatrixr2gnu(cbind(1:length(WSSR), log(WSSR)), "logWSSR.dat")  #save log(WSSR)
 
-GpCmd(h1, "#set terminal postscript eps color;set output \"fitexample2.eps\"\nset multiplot layout 2,1\nset title \"Data\"\nset xlabel \"TT\"\nset ylabel \"N\"\nset nokey\nplot \"" %s% 
+Gpcmd(h1, "#set terminal postscript eps color;set output \"fitexample2.eps\"\nset multiplot layout 2,1\nset title \"Data\"\nset xlabel \"TT\"\nset ylabel \"N\"\nset nokey\nplot \"" %s% 
     tmpfile %s% "\" ls 6 lc rgb \"green\", f(TT) lc rgb \"blue\"\nset title \"log residual sum of squares vs. iteration number\"\nset xlabel \"iteration number\"\nset ylabel \"log residual sum of squares\"\nset nokey\nplot \"logWSSR.dat\" w lp pt 7\nunset multiplot")
 
 print(GpGetvariable(h1, "FIT_NDF"))
 print(GpGetvariable(h1, "FIT_WSSR"))
 print(GpGetvariable(h1, "FIT_STDFIT"))
 # show the fit progress from the log file, summary information
-cat(GpFile2string(logfile))
+cat(Gpfile2string(logfile))
 # pause R and gnuplot
-GpPause()
+Gppause()
 # close gnuplot handle
 h1 <- Gpclose(h1) 

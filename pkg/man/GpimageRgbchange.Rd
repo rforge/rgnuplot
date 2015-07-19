@@ -1,5 +1,5 @@
-\name{GpimageRgbchange}
-\alias{GpimageRgbchange}
+\name{GpimageRGBchange}
+\alias{GpimageRGBchange}
 \alias{GpimageRgbfalsecolor}
 \alias{GpimageRgbfiltercolorBlue}
 \alias{GpimageRgbfiltercolorGreen}
@@ -13,7 +13,7 @@
 \alias{GpimageRgbgreyscaleY}
 \alias{GpimageRgbgreyscaleavg}
 \title{Change image colors}
-\description{\code{GpimageRgbchange} modifies an image with either a formula 
+\description{\code{GpimageRGBchange} modifies an image with either a formula 
 	for each color component of RGB or for all
 \code{GpimageRgbfalsecolor} converts an image from true color to false color 
 and vice-versa
@@ -35,7 +35,7 @@ algorithm - luminosity
 \code{GpimageRgbgreyscaleavg} filters an image using greyscale algorithm
 - average
 }
-\usage{GpimageRgbchange(fileIN, fileOUT, filetype='PNG', terminal=NULL,
+\usage{GpimageRGBchange(fileIN, fileOUT, filetype='PNG', terminal=NULL,
 	rgbformula,rgbformulaG='',rgbformulaB='')
 GpimageRgbfalsecolor(fileIN, fileOUT, filetype='PNG', terminal=NULL)
 GpimageRgbfiltercolorBlue(fileIN, fileOUT, filetype='PNG', terminal=NULL)

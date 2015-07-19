@@ -18,7 +18,7 @@ GpImageRgbfiltercolorSepia("blutux.png", "blutuxsepia.png")
 GpImageRgbgreyscaleBT709("blutux.png", "blutuxgreyscaleBT709.png")
 GpImageRgbfalsecolor("blutux.png", "blutuxfalsecolor.png")
 # make an image lighter by increasing all of the RGB channel values by 50%, limit the values to 255
-GpimageRgbchange("blutux.png", "blutuxlighter.png", "PNG", NULL, "(1.5*r>255)?255:(1.5*r)", "(1.5*g>255)?255:(1.5*g)", "(1.5*b>255)?255:(1.5*b)")
+GpimageRGBchange("blutux.png", "blutuxlighter.png", "PNG", NULL, "(1.5*r>255)?255:(1.5*r)", "(1.5*g>255)?255:(1.5*g)", "(1.5*b>255)?255:(1.5*b)")
 # create an image from tiling other images
 GpImageTile("tux4x4.png", matrix(c("blutuxsepia.png", "blutuxgreyscaleBT709.png", "blutuxfalsecolor.png", "blutuxlighter.png"), 2, 2), c(128, 128), c(128, 128))
 GpImagePlot("tux4x4.png")  # GpImagePlot('tux4x4.png',filetype='PNG') 

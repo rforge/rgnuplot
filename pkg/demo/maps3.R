@@ -1,4 +1,5 @@
-
+library(maps)
+library(mapdata)
 # first make sure that all the data files exist
 if ((!file.exists("NOAACoastline.dat")) | (!file.exists("worldmer.dat")) | (!file.exists("worldpar.dat")) | (!file.exists("tissot.dat")) | (!file.exists("earth_dayXYcoords.dat")) | 
     (!file.exists("earth_day.pal"))) {
@@ -55,19 +56,19 @@ GpPlotMap(vmaps3, projection = "Winkeltripel", linestyle = vstyle3, maprastfile 
 # Ortographic Projection tangent plane at latitude 90 N and at latitude 90 S
 vmaps2 <- c("worldmer15.dat", "worldpar15.dat", "tissot.dat", "NOAACoastline.dat")
 vstyle2 <- c(2, 3, 5, 1)
-GpRun("#set term png;set output \"NOAACoastline_multi1.png\"\nload \"projections.gnu\"\nset multiplot layout 1,2 scale 1.5 title \"Ortographic Projection\"\n" %s% GpPlotMap(vmaps2, 
+Gprun("#set term png;set output \"NOAACoastline_multi1.png\"\nload \"projections.gnu\"\nset multiplot layout 1,2 scale 1.5 title \"Ortographic Projection\"\n" %s% GpPlotMap(vmaps2, 
     linestyle = vstyle2, projection = "Ortographic", plotTitle = "", AdditionalCode = "set title \"Northern Hemisphere\" offset 0,-2", projectionInit = "90,0,90,180", returnCode = TRUE) %s% 
     GpPlotMap(vmaps2, linestyle = vstyle2, projection = "Ortographic", plotTitle = "Southern Hemisphere", projectionInit = "-90,0,90,180", returnCode = TRUE) %s% "\nunset multiplot", 
     1)
 
 # Ortographic Projection tangent plane at the Equator and Greenwich, plus a scaled view of Northern Europe
-GpRun("#set term png;set output \"NOAACoastline_multi2.png\"\nload \"projections.gnu\"\nset multiplot layout 1,2 scale 1.5 title \"Ortographic Projection\"\n" %s% GpPlotMap(vmaps2, 
+Gprun("#set term png;set output \"NOAACoastline_multi2.png\"\nload \"projections.gnu\"\nset multiplot layout 1,2 scale 1.5 title \"Ortographic Projection\"\n" %s% GpPlotMap(vmaps2, 
     linestyle = vstyle2, projection = "Ortographic", plotTitle = "", AdditionalCode = "set title \"Equator and Greenwich\" offset 0,-2", projectionInit = "0,0,90,90", returnCode = TRUE) %s% 
     GpPlotMap(c("worldmer.dat", "worldpar.dat", "NOAACoastline.dat"), linestyle = c(2, 3, 1), projection = "Ortographic", plotTitle = "Northern Europe", AdditionalCode = "ap=100", projectionInit = "60,20,10,20", 
         returnCode = TRUE) %s% "\nunset multiplot", 1)
 
 # Albers Conical Equivalent Projection showing the difference between centering at northern versus southern latitudes.
-GpRun("#set term png;set output \"NOAACoastline_multi3.png\"\nload \"projections.gnu\"\nset multiplot layout 1,2 title \"Albers Conical Equivalent Projection\"\n" %s% GpPlotMap(vmaps2, 
+Gprun("#set term png;set output \"NOAACoastline_multi3.png\"\nload \"projections.gnu\"\nset multiplot layout 1,2 title \"Albers Conical Equivalent Projection\"\n" %s% GpPlotMap(vmaps2, 
     linestyle = vstyle2, projection = "AlbersConical", plotTitle = "", AdditionalCode = "set title \"latitude 20 S\" offset 0,-2", projectionInit = "-20,0", returnCode = TRUE) %s% GpPlotMap(vmaps2, 
     linestyle = vstyle2, projection = "AlbersConical", plotTitle = "latitude 20 N", AdditionalCode = "lat0=20", projectionInit = "20,0", returnCode = TRUE) %s% "\nunset multiplot", 
     1)

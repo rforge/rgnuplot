@@ -1,4 +1,4 @@
-
+library(rpanel)
 #plots a univariate normal distribution
 
 #Initialize the gnuplot handles
@@ -6,16 +6,16 @@ h1 <- Gpinit()
 h2 <- Gpinit()
 
 #set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
-GpSetloadpath(h1)
+Gpsetloadpath(h1)
 
 #change gnuplot's working directory to be the same as R's working directory (default)
-GpSetwd(h1)
+Gpsetwd(h1)
 #read gnuplot script
 gpfile <- system.file('extdata/bivariatenormal.gnu', package='Rgnuplot')
-s2 <- GpFile2string(gpfile)
+s2 <- Gpfile2string(gpfile)
 
-GpCmd(h1,'flag=1\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
-GpCmd(h2,'flag=0\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
+Gpcmd(h1,'flag=1\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
+Gpcmd(h2,'flag=0\nmx=0.0\nsigx=(0.77)\nmy=0.61\nsigy=(1.725)\nsc=0.5\n' %s% s2)
 
 mx <- 0.0
 sigx <- 0.77
@@ -32,10 +32,10 @@ my = ' %s% my %s% '
 sigy = ' %s% sigy %s% '
 sc = ' %s% sc
 
-GpResetplot(h1)
-GpCmd(h1,'flag = 1\n' %s% s1 %s% '\n' %s% s2)
-GpResetplot(h2)
-GpCmd(h2,'flag = 0\n' %s% s1 %s% '\n' %s% s2)
+Gpresetplot(h1)
+Gpcmd(h1,'flag = 1\n' %s% s1 %s% '\n' %s% s2)
+Gpresetplot(h2)
+Gpcmd(h2,'flag = 0\n' %s% s1 %s% '\n' %s% s2)
    
       })
    panel

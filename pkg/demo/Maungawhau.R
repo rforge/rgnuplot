@@ -1,32 +1,33 @@
-
+library(maps)
+library(mapdata)
 # if it doesn't exist, create a file with the volcano data
 if (!file.exists("volcano.txt")) write.table(volcano, file = "volcano.txt", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
 # 3D wireframe
-GpRun("#set terminal postscript eps color;set output \"Maungawhau1.eps\"\nset hidden3d\nsplot \"volcano.txt\" matrix w l", TRUE)
+Gprun("#set terminal postscript eps color;set output \"Maungawhau1.eps\"\nset hidden3d\nsplot \"volcano.txt\" matrix w l", TRUE)
 
 # 3D color surface
-GpRun("#set terminal postscript eps color;set output \"Maungawhau2.eps\"\nset pm3d\nsplot \"volcano.txt\" matrix w pm3d", TRUE)
+Gprun("#set terminal postscript eps color;set output \"Maungawhau2.eps\"\nset pm3d\nsplot \"volcano.txt\" matrix w pm3d", TRUE)
 
 # 2D heatmap
-GpRun("#set terminal postscript eps color;set output \"Maungawhau3.eps\"\nset pm3d map\nsplot \"volcano.txt\" matrix w pm3d", TRUE)
+Gprun("#set terminal postscript eps color;set output \"Maungawhau3.eps\"\nset pm3d map\nsplot \"volcano.txt\" matrix w pm3d", TRUE)
 
 # 2D countour plot
-GpRun("#set terminal png;set output \"Maungawhau4.png\"\n#unset clabel;\nunset surface\nset view map\nset contour base\nsplot \"volcano.txt\" u 2:1:3 matrix w l notitle", TRUE)
+Gprun("#set terminal png;set output \"Maungawhau4.png\"\n#unset clabel;\nunset surface\nset view map\nset contour base\nsplot \"volcano.txt\" u 2:1:3 matrix w l notitle", TRUE)
 
 # 3D wireframe + 2D heatmap
-GpRun("#set terminal png;set output \"Maungawhau5.png\"\nset pm3d at b\nsplot \"volcano.txt\" matrix w l", TRUE)
+Gprun("#set terminal png;set output \"Maungawhau5.png\"\nset pm3d at b\nsplot \"volcano.txt\" matrix w l", TRUE)
 
 # 3D color surface + 2D contour
-GpRun("#set terminal png;set output \"Maungawhau6.png\"\nset contour base\nset hidden3d\nsplot \"volcano.txt\" matrix w pm3d nocontour, \"\" matrix  w lines nosurface", TRUE)
+Gprun("#set terminal png;set output \"Maungawhau6.png\"\nset contour base\nset hidden3d\nsplot \"volcano.txt\" matrix w pm3d nocontour, \"\" matrix  w lines nosurface", TRUE)
 
 # 3D surface + contour
-GpRun("#set terminal postscript eps color;set output \"Maungawhau7.eps\"\nset contour surface\nset hidden3d\nsplot \"volcano.txt\" matrix w pm3d notitle", TRUE)
+Gprun("#set terminal postscript eps color;set output \"Maungawhau7.eps\"\nset contour surface\nset hidden3d\nsplot \"volcano.txt\" matrix w pm3d notitle", TRUE)
 
 # 3D surface + black contour
 tmpfile1 <- tempfile()
 tmpfile2 <- tempfile()
-GpRun("#set terminal postscript eps color;set output \"Maungawhau8.eps\"\nset contour base; set cntrparam level 5\nunset surface\nunset clabel\nset table \"" %s% tmpfile1 %s% "\"\nsplot \"volcano.txt\" matrix w l lt -1\nunset table\nreset\n!awk \"NF<2{printf\\\"\\n\\\"}{print}\" < " %s% 
+Gprun("#set terminal postscript eps color;set output \"Maungawhau8.eps\"\nset contour base; set cntrparam level 5\nunset surface\nunset clabel\nset table \"" %s% tmpfile1 %s% "\"\nsplot \"volcano.txt\" matrix w l lt -1\nunset table\nreset\n!awk \"NF<2{printf\\\"\\n\\\"}{print}\" < " %s% 
     tmpfile1 %s% " > " %s% tmpfile2 %s% "\nsplot \"volcano.txt\" matrix w pm3d nocontour notit,\"" %s% tmpfile2 %s% "\" w l lc rgb \"black\" nosurface notit", TRUE)
 
 # satellite image of Maunga Whau
@@ -53,24 +54,24 @@ file3Ddat <- "Maungawhau2.dat"  # color and DEM data file
 GpPNG4DEM(filePNG, fileDEMtab, file3Ddat)  # create the data file
 
 # 3D DEM with points
-GpRun("#set terminal png;set output \"Maungawhau10.png\"\nset view equal_axes xy\nsplot \"Maungawhau2.dat\" u 1:2:3:4 w p pt 5 ps 1 lc rgb var notitle", TRUE)
+Gprun("#set terminal png;set output \"Maungawhau10.png\"\nset view equal_axes xy\nsplot \"Maungawhau2.dat\" u 1:2:3:4 w p pt 5 ps 1 lc rgb var notitle", TRUE)
 
 # 3D DEM with palette
-GpRun("#set terminal png;set output \"Maungawhau11.png\"\nset palette defined (0 \"black\",1 \"dark-green\", 2 \"dark-olivegreen\",3 \"grey50\", 4 \"white\")\nset view equal_axes xy\nunset colorbox\nset hidden3d\nsplot \"Maungawhau2.dat\" u 1:2:3:4 w pm3d notitle", 
+Gprun("#set terminal png;set output \"Maungawhau11.png\"\nset palette defined (0 \"black\",1 \"dark-green\", 2 \"dark-olivegreen\",3 \"grey50\", 4 \"white\")\nset view equal_axes xy\nunset colorbox\nset hidden3d\nsplot \"Maungawhau2.dat\" u 1:2:3:4 w pm3d notitle", 
     TRUE)
 
 # create a palette for Maungawhau61x87.png
 testmap <- "Maungawhau61x87"
 PNGdata <- GpPNG2color(testmap %s% ".png")  # get the color matrix from the PNG file
-paletteRGB <- GpCreatePaletteFromMatrix(PNGdata)  # create a palette
+paletteRGB <- GpcreatePaletteFromMatrix(PNGdata)  # create a palette
 GpRGB1to3channels(paletteRGB, fileRGB3channel = testmap %s% ".pal")  # save the palette to a file with separated RGB components
 # create an indexed color matrix for Maungawhau61x86.png
-PNGdataIndexed <- GpCreateIndexFromMatrixAndPalette(PNGdata, paletteRGB)  # create an indexed color matrix
+PNGdataIndexed <- GpcreateIndexFromMatrixAndPalette(PNGdata, paletteRGB)  # create an indexed color matrix
 p <- matrix(c(t(PNGdataIndexed)), ncol = 1)
 GpMatrix2XYdata("volcano.txt", testmap %s% "XYndx.dat", p, surfacegrid = FALSE, TRUE)
 NpaletteColors <- length(paletteRGB) - 1  # number of palette colors starting from zero
 
-GpRun("#set terminal png;set output \"Maungawhau12.png\"\nset palette model RGB file \"" %s% testmap %s% ".pal\" u ($1/255):($2/255):($3/255)\nset cbrange[0:" %s% NpaletteColors %s% 
+Gprun("#set terminal png;set output \"Maungawhau12.png\"\nset palette model RGB file \"" %s% testmap %s% ".pal\" u ($1/255):($2/255):($3/255)\nset cbrange[0:" %s% NpaletteColors %s% 
     "]\nset view equal xyz\nset view 38,26\nset pm3d corners2color c1\nunset colorbox\nset hidden3d\nsplot \"" %s% testmap %s% "XYndx.dat\" u 1:2:3:4 w pm3d notitle", TRUE)
 
 ## download a Google Maps tile and use its coordinates to clip a DEM (in geoTIFF format) New Zealand National Digital Elevation Model (North Island) from Landcare Research, Sourced
@@ -93,14 +94,14 @@ if (file.exists(f)) {
     GpSplot(r2)
     str(r)  #44 rows x 54 columns
     GpMatrixr2gnu(r2, "Maungaw.dat")
-    GpRun("splot \"Maungaw.dat\" matrix w l", TRUE)
+    Gprun("splot \"Maungaw.dat\" matrix w l", TRUE)
 }
 # Instead of downloading the geoTiff and running code , the file 'Maungaw.dat' can be copied from the extdata directory of Rgnuplot.
 if (!(file.exists(f))) file.copy(system.file("extdata/Maungaw.dat", package = "Rgnuplot"), getwd())
 
 # resample to five times its original size.
 GpResampleDEM("Maungaw.dat", "MaungawresXY.dat", c(0, 44 * 5 - 1), c(0, 54 * 5 - 1), interpolationMethod = (44 * 5) %s% "," %s% (54 * 5) %s% " gauss 1")
-GpRun("splot \"MaungawresXY.dat\" u 1:2:3 w l", TRUE)
+Gprun("splot \"MaungawresXY.dat\" u 1:2:3 w l", TRUE)
 
 # Rotate and resize the satellite image.
 GpImageRotate("MaungawhauZOOM16.png", "MaungawhauZOOM16rotated.png", 270)
@@ -109,18 +110,18 @@ GpImagePlot("Maungawhau220x270.png")
 
 pngmap <- "Maungawhau220x270"
 PNGdata <- GpPNG2color(pngmap %s% ".png")  # get the color matrix from the PNG file
-paletteRGB <- GpCreatePaletteFromMatrix(PNGdata)  # create a palette
+paletteRGB <- GpcreatePaletteFromMatrix(PNGdata)  # create a palette
 GpRGB1to3channels(paletteRGB, fileRGB3channel = pngmap %s% ".pal")  # save the palette to a file with separated RGB components
-PNGdataIndexed <- GpCreateIndexFromMatrixAndPalette(PNGdata, paletteRGB)  # create an indexed color matrix
+PNGdataIndexed <- GpcreateIndexFromMatrixAndPalette(PNGdata, paletteRGB)  # create an indexed color matrix
 NpaletteColors <- length(paletteRGB) - 1  # number of palette colors starting from zero
 
 # create a gnuplot data file with color and DEM
 GpXydata2matrix("MaungawresXY.dat", "Maungaw640.dat")
-GpRun("set pm3d;splot \"Maungaw640.dat\" matrix w pm3d", TRUE)
+Gprun("set pm3d;splot \"Maungaw640.dat\" matrix w pm3d", TRUE)
 p <- matrix(c(t(PNGdataIndexed)), ncol = 1)
 GpMatrix2XYdata("Maungaw640.dat", "Maungawhau3.dat", p, surfacegrid = FALSE, TRUE)
 
-GpRun("#set terminal pngcairo;set output \"Maungawhau13.png\"\nset palette model RGB file \"" %s% pngmap %s% ".pal\" u ($1/255):($2/255):($3/255)\nset cbrange[0:" %s% NpaletteColors %s% 
+Gprun("#set terminal pngcairo;set output \"Maungawhau13.png\"\nset palette model RGB file \"" %s% pngmap %s% ".pal\" u ($1/255):($2/255):($3/255)\nset cbrange[0:" %s% NpaletteColors %s% 
     "]\n#set view equal xyz\nunset tics;unset border\nset size ratio 1,1,5\nset view 30,130\nset pm3d corners2color c1\nunset colorbox\nset hidden3d\nsplot \"Maungawhau3.dat\" u 1:2:3:4 w pm3d notitle", 
     TRUE)
  

@@ -1,10 +1,11 @@
-
+library(maps)
+library(mapdata)
 # saving a map from package 'maps' with Mercator projection
 map("world", projection = "mercator")
 if (!file.exists("worldRmapMercator.dat")) {
     GpMapsr2gnu(map("world", projection = "mercator", plot = FALSE), "worldRmapMercator.dat")
 }
-GpRun("unset key; unset tics\nplot \"worldRmapMercator.dat\" w l lc rgb \"black\"", TRUE)
+Gprun("unset key; unset tics\nplot \"worldRmapMercator.dat\" w l lc rgb \"black\"", TRUE)
 
 if (!file.exists("ne_110m_coastline.dat")) {
     # converting a world map from SHP to a data file readable by gnuplot download from http://www.naturalearthdata.com/downloads/ ne_110m_coastline.zip only 84 kilobytes
@@ -17,10 +18,10 @@ if (!file.exists("ne_110m_coastline.dat")) {
     GpSHP2gnu("ne_110m_coastline", "ne_110m_coastline", "ne_110m_coastline.dat")  # it's already WGS84
     plot(world.shp)
 }
-GpRun("#set term png;set output \"naturalearthdata_1.png\"\nplot \"ne_110m_coastline.dat\" w l lc rgb \"black\"", TRUE)
+Gprun("#set term png;set output \"naturalearthdata_1.png\"\nplot \"ne_110m_coastline.dat\" w l lc rgb \"black\"", TRUE)
 
 if (!file.exists("worldpar.dat")) GpMapMerpar("worldpar.dat", "worldmer.dat", 10, 10)
-GpRun("#set term png;set output \"naturalearthdata_2.png\"\nunset key; unset tics;unset border\nplot \"ne_110m_coastline.dat\" w l lc rgb \"black\", \"worldpar.dat\"  w l lc rgb \"grey\", \"worldmer.dat\"  w l lc rgb \"grey\"", 
+Gprun("#set term png;set output \"naturalearthdata_2.png\"\nunset key; unset tics;unset border\nplot \"ne_110m_coastline.dat\" w l lc rgb \"black\", \"worldpar.dat\"  w l lc rgb \"grey\", \"worldmer.dat\"  w l lc rgb \"grey\"", 
     TRUE)
 
 # convert the shapefile with Tissot's indicatrices to a data file format using the shapefile from Matthew T. Perry 2005, Tissot Indicatrix - Examining the distortion of map
@@ -33,18 +34,18 @@ if (!file.exists("NOAACoastline.dat")) {
     download.file("http://www.ngdc.noaa.gov/mgg/coast/tmp/13777.dat", "NOAA Coastline Data.dat", method = "wget")
     if (!file.exists("NOAA Coastline Data.dat")) 
         stop("Please download WCL(World Coast Line) from http://www.ngdc.noaa.gov/mgg_coastline/ and save it as \"NOAA Coastline Data.dat\"")
-    GpRun("!awk '{gsub(/>/,\"\")}1' \"NOAA Coastline Data.dat\" >NOAACoastline.dat", FALSE)
+    Gprun("!awk '{gsub(/>/,\"\")}1' \"NOAA Coastline Data.dat\" >NOAACoastline.dat", FALSE)
     
 }
 
-GpRun("unset key;plot \"NOAACoastline.dat\" w l, \"worldpar.dat\" w l,\"worldmer.dat\" w l", TRUE)
+Gprun("unset key;plot \"NOAACoastline.dat\" w l, \"worldpar.dat\" w l,\"worldmer.dat\" w l", TRUE)
 
 # Mercator's Projection
-GpRun("#set term png;set output \"NOAACoastline_Mercator.png\"\nload \"projections.gnu\"\np=MercatorInit(0)\nset size ratio -1\nset title p\nplot \"worldmer.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 3, \\\n \"worldpar.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 2, \\\n \"NOAACoastline.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 1", 
+Gprun("#set term png;set output \"NOAACoastline_Mercator.png\"\nload \"projections.gnu\"\np=MercatorInit(0)\nset size ratio -1\nset title p\nplot \"worldmer.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 3, \\\n \"worldpar.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 2, \\\n \"NOAACoastline.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 1", 
     TRUE)
 
 # Mercator's Projection with Tissot's indicatrices
-GpRun("#set term png;set output \"NOAACoastline_Mercator_Tissot.png\"\nload \"projections.gnu\"\np=MercatorInit(0)\nset size ratio -1\nset title p\nplot \"tissot.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) w l notit, \\\n\"worldmer.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 3, \\\n \"worldpar.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 2, \\\n \"NOAACoastline.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 1", 
+Gprun("#set term png;set output \"NOAACoastline_Mercator_Tissot.png\"\nload \"projections.gnu\"\np=MercatorInit(0)\nset size ratio -1\nset title p\nplot \"tissot.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) w l notit, \\\n\"worldmer.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 3, \\\n \"worldpar.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 2, \\\n \"NOAACoastline.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)) notit w l ls 1", 
     TRUE)
 
 
@@ -59,12 +60,12 @@ if (!file.exists(testmap %s% ".png")) {
 PNGdata2 <- GpPNG2color(testmap %s% ".png")  #get the color matrix from the PNG file
 Mheight <- dim(PNGdata2)[1]
 Mwidth <- dim(PNGdata2)[2]
-paletteRGB <- GpCreatePaletteFromMatrix(PNGdata2)  #create a palette
+paletteRGB <- GpcreatePaletteFromMatrix(PNGdata2)  #create a palette
 NpaletteColors <- length(paletteRGB) - 1  # number of palette colors starting from zero
 if (!file.exists(testmap %s% ".pal")) {
     GpRGB1to3channels(paletteRGB, fileRGB3channel = testmap %s% ".pal")  # save the palette to a file with separated RGB components
 }
-PNGdataIndexed <- GpCreateIndexFromMatrixAndPalette(PNGdata2, paletteRGB)  # create an indexed color matrix
+PNGdataIndexed <- GpcreateIndexFromMatrixAndPalette(PNGdata2, paletteRGB)  # create an indexed color matrix
 if (!file.exists(testmap %s% "matrixndx.dat")) {
     print("Please wait, this might take some time.")
     GpMatrixr2gnu(PNGdataIndexed, testmap %s% "matrixndx.dat")  # save the indexed color matrix to a file
@@ -83,7 +84,7 @@ if (!file.exists("earth_dayXYcoords.dat")) {
 if (!file.exists("worldparS15.dat")) GpMapMerpar("worldparS15.dat", "worldmerS15.dat", 15, 15, TRUE)
 if (!file.exists("worldparS20.dat")) GpMapMerpar("worldparS20.dat", "worldmerS20.dat", 20, 20, TRUE)
 # Mercator's Projection
-GpRun("#set term pngcairo;set output \"earth_dayMercator.png\"\nload \"projections.gnu\"\np=MercatorInit(0)\nset title p\nset pm3d map\nunset key;unset tics;unset border;unset colorbox\nset palette model RGB file \"" %s% 
+Gprun("#set term pngcairo;set output \"earth_dayMercator.png\"\nload \"projections.gnu\"\np=MercatorInit(0)\nset title p\nset pm3d map\nunset key;unset tics;unset border;unset colorbox\nset palette model RGB file \"" %s% 
     testmap %s% ".pal\" u ($1/255):($2/255):($3/255)\nset cbrange[0:" %s% NpaletteColors %s% "]\nset pm3d corners2color c1\nsplot \"earth_dayXYcoords.dat\" u (MercatorYC($2,$1)):(MercatorXC($2,$1)):3 w pm3d notit, \\\n\"worldmerS15.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)):(1) notit w l ls 3, \\\n\"worldparS15.dat\" using (MercatorYC($2,$1)):(MercatorXC($2,$1)):(1) notit w l ls 2", 
     TRUE)
 

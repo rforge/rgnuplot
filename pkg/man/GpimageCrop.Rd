@@ -62,6 +62,6 @@ backgroundColor='')
 \item{optional256}{ boolean, TRUE=256 color output}
 }
 \value{	none}
-\seealso{	\code{\link{GpimageRgbchange}}}
+\seealso{	\code{\link{GpimageRGBchange}}}
 \author{Jose' Gama}
 \keyword{programming}

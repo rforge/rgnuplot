@@ -4,16 +4,16 @@
 h1 <- Gpinit()
 
 # set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
-GpSetloadpath(h1)
+Gpsetloadpath(h1)
 
 # the filename has Rgnuplot's extdata path
 gpfile <- system.file(package = "Rgnuplot") %s% "/extdata/helloworld.gnu"
 
 # load script into a string
-s <- GpFile2string(gpfile)
+s <- Gpfile2string(gpfile)
 # send gnuplot commands
-GpCmd(h1, s)
+Gpcmd(h1, s)
 # pause R and gnuplot
-GpPause()
+Gppause()
 # close gnuplot handle
 h1 <- Gpclose(h1) 

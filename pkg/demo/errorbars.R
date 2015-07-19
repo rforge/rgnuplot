@@ -1,5 +1,5 @@
 
-# based on the example from library gplots
+# based on the example from gplots
 data(state)
 tmp <- split(state.area, state.region)
 means <- sapply(tmp, mean)
@@ -10,10 +10,10 @@ ciw <- qt(0.975, n) * stdev/sqrt(n)
 # Initialize the gnuplot handle
 h1 <- Gpinit()
 # set gnuplot's additional search directories, to the extdata directory from Rgnuplot (default)
-GpSetloadpath(h1)
+Gpsetloadpath(h1)
 
 # change gnuplot's working directory to be the same as R's working directory (default)
-GpSetwd(h1)
+Gpsetwd(h1)
 
 tmpfile <- tempfile()
 xtic <- ""
@@ -30,24 +30,24 @@ for (h in 1:4) {
 }
 
 # error box, constant width
-GpCmd(h1, "reset\n#set terminal png;set output \"errorbox.png\"\nset xrange [0:5]\nset yrange [ 0:250000]\nset xtics (" %s% xtic %s% ")\nplot \"" %s% tmpfile %s% "\" u 1:2:3:4:(0.2) with boxerror lc rgb \"black\" tit \"Area per state\"")
+Gpcmd(h1, "reset\n#set terminal png;set output \"errorbox.png\"\nset xrange [0:5]\nset yrange [ 0:250000]\nset xtics (" %s% xtic %s% ")\nplot \"" %s% tmpfile %s% "\" u 1:2:3:4:(0.2) with boxerror lc rgb \"black\" tit \"Area per state\"")
 
 # pause R and gnuplot
-GpPause()
+Gppause()
 
 # error bars, mean values and a line
-GpCmd(h1, "reset\n#set terminal png;set output \"errorbar1.png\"\nset xrange [0:5]\nset yrange [ 0:250000]\nset xtics (" %s% xtic %s% ")\nset xtics out\nset ytics out\n" %s% gplabelmean %s% 
+Gpcmd(h1, "reset\n#set terminal png;set output \"errorbar1.png\"\nset xrange [0:5]\nset yrange [ 0:250000]\nset xtics (" %s% xtic %s% ")\nset xtics out\nset ytics out\n" %s% gplabelmean %s% 
     "\nplot \"" %s% tmpfile %s% "\" with errorbars tit \"Area per state\", \"" %s% tmpfile %s% "\" w l notit")
 
 # pause R and gnuplot
-GpPause()
+Gppause()
 
 # error bars, mean values, a line and more labels
-GpCmd(h1, "reset\n#set terminal png;set output \"errorbar2.png\"\nset xrange [0:5]\nset yrange [ 0:250000]\nset xtics (" %s% xtic %s% ")\nset xtics out\nset ytics out\nset xlabel \"Region\"\nset ylabel \"Area\"\n" %s% 
+Gpcmd(h1, "reset\n#set terminal png;set output \"errorbar2.png\"\nset xrange [0:5]\nset yrange [ 0:250000]\nset xtics (" %s% xtic %s% ")\nset xtics out\nset ytics out\nset xlabel \"Region\"\nset ylabel \"Area\"\n" %s% 
     gplabeln %s% "\nplot \"" %s% tmpfile %s% "\" with errorbars tit \"Area per state\", \"" %s% tmpfile %s% "\" w l notit")
 
 # pause R and gnuplot
-GpPause()
+Gppause()
 
 # close gnuplot handles
 h1 <- Gpclose(h1) 

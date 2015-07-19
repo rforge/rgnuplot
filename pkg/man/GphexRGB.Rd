@@ -8,6 +8,6 @@
 \item{b}{ value for blue channel}
 }
 \value{	hexadecimal RGB sequence}
-\seealso{	\code{\link{GpimageRgbchange}}}
+\seealso{	\code{\link{GpimageRGBchange}}}
 \author{Jose' Gama}
 \keyword{programming}

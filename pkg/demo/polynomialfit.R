@@ -16,10 +16,10 @@ write(t(cbind(letters[1:(polnorder + 1)], "=", initvalues)), "guess.txt", ncolum
 # create gnuplot handle
 h1 <- Gpinit()
 # change gnuplot's working directory to be the same as R's working directory (default)
-GpSetwd(h1)
-GpCmd(h1, "#set terminal postscript eps color;set output \"polynomialfit.eps\"\ny(x)=a+b*x+c*x**2+d*x**3+e*x**4+f*x**5+g*x**6+h*x**7\nfit y(x) \"data.txt\" via \"guess.txt\"\nset xlabel \"x\"\nset ylabel \"y\"\nunset key\nplot y(x), \"data.txt\"")
+Gpsetwd(h1)
+Gpcmd(h1, "#set terminal postscript eps color;set output \"polynomialfit.eps\"\ny(x)=a+b*x+c*x**2+d*x**3+e*x**4+f*x**5+g*x**6+h*x**7\nfit y(x) \"data.txt\" via \"guess.txt\"\nset xlabel \"x\"\nset ylabel \"y\"\nunset key\nplot y(x), \"data.txt\"")
 
 # pause R and gnuplot
-GpPause()
+Gppause()
 # close gnuplot handle
 h1 <- Gpclose(h1) 

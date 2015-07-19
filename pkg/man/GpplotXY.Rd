@@ -1,8 +1,8 @@
-\name{GpplotXy}
-\alias{GpplotXy}
+\name{GpplotXY}
+\alias{GpplotXY}
 \title{Plot two list of doubles in 2D}
-\description{\code{GpplotXy} plots two list of doubles in 2D}
-\usage{GpplotXy(handle, x, y, n, title)}
+\description{\code{GpplotXY} plots two list of doubles in 2D}
+\usage{GpplotXY(handle, x, y, n, title)}
 \arguments{ \item{handle}{ handle to the connection}
 \item{x}{ list of doubles for the x-axis}
 \item{y}{ list of doubles for the y-axis}

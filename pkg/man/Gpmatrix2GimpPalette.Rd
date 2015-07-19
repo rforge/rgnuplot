@@ -1,17 +1,17 @@
 \name{Gpmatrix2GimpPalette}
 \alias{Gpmatrix2GimpPalette}
 \alias{Gpmatrix2palette}
-\alias{GpCreateIndexFromMatrixAndPalette}
-\alias{GpCreatePaletteFromMatrix}
-\alias{GpGimpPalette2matrix}
+\alias{GpcreateIndexFromMatrixAndPalette}
+\alias{GpcreatePaletteFromMatrix}
+\alias{GpgimpPalette2matrix}
 \alias{GppalettePlot}
 \alias{GpshowPaletteColornames}
 \title{Work with palette files}
 \description{\code{Gpmatrix2GimpPalette} saves a matrix into a Gimp palette file (gpl)
 \code{Gpmatrix2palette} save a palette from matrix data with optional palette indeces and the option to modify the palette for solid colors
-\code{GpCreateIndexFromMatrixAndPalette} from a matrix with RGB colors (decimal 24bit) from an image file and its palette as a vector, create a matrix with indices
-\code{GpCreatePaletteFromMatrix} from a matrix with RGB colors (decimal 24bit) from an image file create a palette of 256 colors (decimal 24bit), as a vector
-\code{GpGimpPalette2matrix} reads a Gimp palette into a matrix, optionally the index can be returned too
+\code{GpcreateIndexFromMatrixAndPalette} from a matrix with RGB colors (decimal 24bit) from an image file and its palette as a vector, create a matrix with indices
+\code{GpcreatePaletteFromMatrix} from a matrix with RGB colors (decimal 24bit) from an image file create a palette of 256 colors (decimal 24bit), as a vector
+\code{GpgimpPalette2matrix} reads a Gimp palette into a matrix, optionally the index can be returned too
 \code{GppalettePlot} plots a palette from an indexed PNG file
 \code{GpshowPaletteColornames} get gnuplot's RGB color names as a dataframe - 'ColorName','ColorHex','R','G','B'
 }
@@ -19,11 +19,11 @@
 
 Gpmatrix2palette(paletteData, paletteFileName,paletteIndeces=0,SolidColor=FALSE)
 
-GpCreateIndexFromMatrixAndPalette(matrixRGB, paletteRGB)
+GpcreateIndexFromMatrixAndPalette(matrixRGB, paletteRGB)
 
-GpCreatePaletteFromMatrix(matrixRGB, sortType='')
+GpcreatePaletteFromMatrix(matrixRGB, sortType='')
 
-GpGimpPalette2matrix(paletteGimp,returnIndex=FALSE)
+GpgimpPalette2matrix(paletteGimp,returnIndex=FALSE)
 
 GppalettePlot(filepal, sortType='', TheGimp=FALSE)
 
