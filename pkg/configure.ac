@@ -3,7 +3,7 @@
 #Title A simple interface to the PROJ.4 cartographic projections library
 #Author Simon Urbanek <simon.urbanek@r-project.org>
 
-AC_INIT(Rgnuplot, 1.0, jgama@abo.fi)
+AC_INIT(Rgnuplot, 1.0, rxprtgama@gmail.com)
 AC_CONFIG_SRCDIR(src/Rgnuplot.c)
 
 # find R home and set correct compiler + flags

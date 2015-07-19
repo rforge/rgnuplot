@@ -1,6 +1,6 @@
 Package: Rgnuplot
 Type: Package
-Title: R interface for gnuplot
+Title: R Interface for Gnuplot
 Version: 1.0.3
 Encoding: UTF-8
 Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre"),email = "rxprtgama@gmail.com"),
@@ -10,7 +10,7 @@ Authors@R: c(person(given = "Jose", family = "Gama", role = c("aut","cre"),email
     person(given = "Oscar", family = "Perpiñán Lamigueiro", role = "ctb")
     )  
 SystemRequirements: gnuplot
-Description: Rgnuplot, interface for gnuplot
+Description: Interface for gnuplot
         Based on gnuplot_i version 1.11, the GPL code from Nicolas Devillard.
 License: GPL (>= 3)
 Depends: R (>= 2.7.0)
