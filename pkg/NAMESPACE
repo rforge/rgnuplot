@@ -4,4 +4,5 @@ exportPattern("^Gp","%s%")
 #importFrom(methods, as, is)
 importFrom(stats, na.omit)
 importFrom(utils, read.delim, read.table, write.table)
+importFrom("methods", "as", "is")
 
