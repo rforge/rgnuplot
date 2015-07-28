@@ -13,5 +13,5 @@ SystemRequirements: gnuplot
 Description: Interface for gnuplot
         Based on gnuplot_i version 1.11, the GPL code from Nicolas Devillard.
 License: GPL (>= 3)
-Depends: R (>= 2.7.0)
+Depends: R (>= 2.7.0), methods
 Enhances: colorspace, png, rgdal, sp
